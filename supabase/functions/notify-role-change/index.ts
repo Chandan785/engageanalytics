@@ -122,15 +122,48 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const emailResult = await emailResponse.json();
+    
+    // Handle Resend domain verification requirement gracefully
     if (!emailResponse.ok) {
-      console.error("Email send failed:", emailResult);
-      throw new Error(emailResult.message || "Failed to send email");
+      console.warn("Email send failed:", emailResult);
+      
+      // Check if it's a domain verification issue
+      const isDomainError = emailResult.message?.includes("verify a domain") || 
+                           emailResult.message?.includes("testing emails");
+      
+      if (isDomainError) {
+        console.log("Domain not verified - role change succeeded but notification email was not sent");
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            emailSent: false,
+            warning: "Role updated successfully but email notification could not be sent. To enable email notifications, verify a domain at resend.com/domains."
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+      
+      // For other email errors, still return success for the role change
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          emailSent: false,
+          warning: `Role updated but email failed: ${emailResult.message}`
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     console.log("Email sent successfully:", emailResult);
 
     return new Response(
-      JSON.stringify({ success: true, emailResponse: emailResult }),
+      JSON.stringify({ success: true, emailSent: true, emailResponse: emailResult }),
       {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
