@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -48,6 +49,7 @@ interface UserWithRoles {
 const AVAILABLE_ROLES = ['admin', 'host', 'participant', 'viewer'] as const;
 
 const UserRoleManagement = () => {
+  const { profile } = useAuth();
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -57,6 +59,25 @@ const UserRoleManagement = () => {
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
   const [roleToRemove, setRoleToRemove] = useState<{ userId: string; role: string; userName: string } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  const sendRoleChangeNotification = async (targetUserId: string, action: 'add' | 'remove', role: string) => {
+    try {
+      const { error } = await supabase.functions.invoke('notify-role-change', {
+        body: {
+          targetUserId,
+          action,
+          role,
+          adminName: profile?.full_name || profile?.email || 'Admin',
+        },
+      });
+
+      if (error) {
+        console.error('Failed to send role change notification:', error);
+      }
+    } catch (err) {
+      console.error('Error sending notification:', err);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -118,6 +139,8 @@ const UserRoleManagement = () => {
         }
       } else {
         toast.success(`Added ${roleToAdd} role to ${selectedUser.full_name || selectedUser.email}`);
+        // Send email notification
+        sendRoleChangeNotification(selectedUser.user_id, 'add', roleToAdd);
         fetchUsers();
       }
     } catch (error) {
@@ -151,6 +174,8 @@ const UserRoleManagement = () => {
       if (error) throw error;
 
       toast.success(`Removed ${role} role`);
+      // Send email notification
+      sendRoleChangeNotification(userId, 'remove', role);
       fetchUsers();
     } catch (error) {
       console.error('Error removing role:', error);
