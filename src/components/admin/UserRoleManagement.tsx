@@ -40,6 +40,7 @@ import {
   UserCog,
   UsersRound,
   X,
+  Minus,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -66,7 +67,9 @@ const UserRoleManagement = () => {
   // Bulk selection state
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
+  const [isBulkRemoveDialogOpen, setIsBulkRemoveDialogOpen] = useState(false);
   const [bulkRole, setBulkRole] = useState<string>('');
+  const [bulkRemoveRole, setBulkRemoveRole] = useState<string>('');
 
   const sendRoleChangeNotification = async (targetUserId: string, action: 'add' | 'remove', role: string) => {
     try {
@@ -263,6 +266,77 @@ const UserRoleManagement = () => {
     }
   };
 
+  const handleBulkRemoveRole = async () => {
+    if (!bulkRemoveRole || selectedUserIds.size === 0) return;
+
+    // Show confirmation for admin role
+    if (bulkRemoveRole === 'admin') {
+      const confirmRemove = window.confirm(
+        `Are you sure you want to remove admin privileges from ${selectedUserIds.size} user(s)? This will revoke their administrative access.`
+      );
+      if (!confirmRemove) return;
+    }
+
+    setActionLoading(true);
+    let successCount = 0;
+    let skipCount = 0;
+
+    try {
+      const selectedUsers = users.filter((u) => selectedUserIds.has(u.user_id));
+      
+      for (const user of selectedUsers) {
+        // Skip if user doesn't have the role
+        if (!user.roles.includes(bulkRemoveRole)) {
+          skipCount++;
+          continue;
+        }
+
+        const { error } = await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', user.user_id)
+          .eq('role', bulkRemoveRole as 'admin' | 'host' | 'participant' | 'viewer');
+
+        if (!error) {
+          successCount++;
+          // Send notification in background
+          sendRoleChangeNotification(user.user_id, 'remove', bulkRemoveRole);
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(`Removed ${bulkRemoveRole} role from ${successCount} user${successCount > 1 ? 's' : ''}`);
+      }
+      if (skipCount > 0) {
+        toast.info(`${skipCount} user${skipCount > 1 ? 's' : ''} didn't have the ${bulkRemoveRole} role`);
+      }
+
+      fetchUsers();
+      clearSelection();
+    } catch (error) {
+      console.error('Error in bulk role removal:', error);
+      toast.error('Some role removals failed');
+    } finally {
+      setActionLoading(false);
+      setIsBulkRemoveDialogOpen(false);
+      setBulkRemoveRole('');
+    }
+  };
+
+  // Get common roles among selected users for bulk removal
+  const getCommonRolesForSelectedUsers = () => {
+    const selectedUsers = users.filter((u) => selectedUserIds.has(u.user_id));
+    if (selectedUsers.length === 0) return [];
+    
+    // Get all roles that at least one selected user has
+    const allRoles = new Set<string>();
+    selectedUsers.forEach((user) => {
+      user.roles.forEach((role) => allRoles.add(role));
+    });
+    
+    return Array.from(allRoles);
+  };
+
   const filteredUsers = users.filter(
     (user) =>
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -331,6 +405,17 @@ const UserRoleManagement = () => {
                 <Plus className="h-4 w-4 mr-1" />
                 Assign Role
               </Button>
+              {getCommonRolesForSelectedUsers().length > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-destructive/30 text-destructive hover:bg-destructive/10"
+                  onClick={() => setIsBulkRemoveDialogOpen(true)}
+                >
+                  <Minus className="h-4 w-4 mr-1" />
+                  Remove Role
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -516,6 +601,49 @@ const UserRoleManagement = () => {
             <Button onClick={handleBulkAddRole} disabled={!bulkRole || actionLoading}>
               {actionLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Assign to {selectedUserIds.size} User{selectedUserIds.size > 1 ? 's' : ''}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Remove Role Dialog */}
+      <Dialog open={isBulkRemoveDialogOpen} onOpenChange={setIsBulkRemoveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Minus className="h-5 w-5" />
+              Bulk Role Removal
+            </DialogTitle>
+            <DialogDescription>
+              Remove a role from {selectedUserIds.size} selected user{selectedUserIds.size > 1 ? 's' : ''}. 
+              Users who don't have the role will be skipped.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Select value={bulkRemoveRole} onValueChange={setBulkRemoveRole}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a role to remove" />
+              </SelectTrigger>
+              <SelectContent>
+                {getCommonRolesForSelectedUsers().map((role) => (
+                  <SelectItem key={role} value={role} className="capitalize">
+                    {role}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBulkRemoveDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleBulkRemoveRole} 
+              disabled={!bulkRemoveRole || actionLoading}
+            >
+              {actionLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Remove from {selectedUserIds.size} User{selectedUserIds.size > 1 ? 's' : ''}
             </Button>
           </DialogFooter>
         </DialogContent>
