@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.send-session-invite]
 verify_jwt = false
+
+[functions.notify-role-change]
+verify_jwt = false
