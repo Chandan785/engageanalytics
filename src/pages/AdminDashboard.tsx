@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { AppHeader } from '@/components/AppHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserRoleManagement from '@/components/admin/UserRoleManagement';
+import RoleAuditLog from '@/components/admin/RoleAuditLog';
 import {
   Shield,
   Users,
@@ -159,9 +160,10 @@ const AdminDashboard = () => {
 
         {/* Tabs for Overview and User Management */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-lg grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="audit">Activity Log</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -254,6 +256,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="users">
             <UserRoleManagement />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <RoleAuditLog />
           </TabsContent>
         </Tabs>
       </main>
