@@ -43,6 +43,7 @@ import {
   Minus,
   Download,
   Filter,
+  ArrowUpDown,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -73,6 +74,7 @@ const UserRoleManagement = () => {
   const [bulkRole, setBulkRole] = useState<string>('');
   const [bulkRemoveRole, setBulkRemoveRole] = useState<string>('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('name-asc');
 
   const sendRoleChangeNotification = async (targetUserId: string, action: 'add' | 'remove', role: string) => {
     try {
@@ -340,18 +342,37 @@ const UserRoleManagement = () => {
     return Array.from(allRoles);
   };
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (user.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase());
-    
-    const matchesRole =
-      roleFilter === 'all' ||
-      (roleFilter === 'no-roles' && user.roles.length === 0) ||
-      user.roles.includes(roleFilter);
-    
-    return matchesSearch && matchesRole;
-  });
+  const filteredUsers = users
+    .filter((user) => {
+      const matchesSearch =
+        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (user.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase());
+      
+      const matchesRole =
+        roleFilter === 'all' ||
+        (roleFilter === 'no-roles' && user.roles.length === 0) ||
+        user.roles.includes(roleFilter);
+      
+      return matchesSearch && matchesRole;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'name-asc':
+          return (a.full_name || '').localeCompare(b.full_name || '');
+        case 'name-desc':
+          return (b.full_name || '').localeCompare(a.full_name || '');
+        case 'email-asc':
+          return a.email.localeCompare(b.email);
+        case 'email-desc':
+          return b.email.localeCompare(a.email);
+        case 'roles-asc':
+          return a.roles.length - b.roles.length;
+        case 'roles-desc':
+          return b.roles.length - a.roles.length;
+        default:
+          return 0;
+      }
+    });
 
   const getRoleBadgeClass = (role: string): string => {
     switch (role) {
@@ -439,6 +460,20 @@ const UserRoleManagement = () => {
                     {role.charAt(0).toUpperCase() + role.slice(1)}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-40">
+                <ArrowUpDown className="h-4 w-4 mr-1" />
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                <SelectItem value="email-asc">Email (A-Z)</SelectItem>
+                <SelectItem value="email-desc">Email (Z-A)</SelectItem>
+                <SelectItem value="roles-asc">Roles (Fewest)</SelectItem>
+                <SelectItem value="roles-desc">Roles (Most)</SelectItem>
               </SelectContent>
             </Select>
             <div className="relative w-full sm:w-48">
