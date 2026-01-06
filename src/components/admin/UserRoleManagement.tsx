@@ -80,11 +80,21 @@ const UserRoleManagement = () => {
   const [bulkRole, setBulkRole] = useState<string>('');
   const [bulkRemoveRole, setBulkRemoveRole] = useState<string>('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [sessionFilter, setSessionFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('name-asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const PAGE_SIZE_OPTIONS = [5, 10, 25, 50];
+  const SESSION_EXPIRY_HOURS = 168; // 7 days
+
+  const getSessionStatus = (lastLoginAt: string | null): 'active' | 'expiring' | 'expired' | 'never' => {
+    if (!lastLoginAt) return 'never';
+    const hoursSinceLogin = differenceInHours(new Date(), new Date(lastLoginAt));
+    if (hoursSinceLogin >= SESSION_EXPIRY_HOURS) return 'expired';
+    if (hoursSinceLogin >= SESSION_EXPIRY_HOURS - 24) return 'expiring';
+    return 'active';
+  };
 
   const sendRoleChangeNotification = async (targetUserId: string, action: 'add' | 'remove', role: string) => {
     try {
@@ -364,7 +374,13 @@ const UserRoleManagement = () => {
         (roleFilter === 'no-roles' && user.roles.length === 0) ||
         user.roles.includes(roleFilter);
       
-      return matchesSearch && matchesRole;
+      const userSessionStatus = getSessionStatus(user.last_login_at);
+      const matchesSession =
+        sessionFilter === 'all' ||
+        sessionFilter === userSessionStatus ||
+        (sessionFilter === 'inactive' && (userSessionStatus === 'expired' || userSessionStatus === 'never'));
+      
+      return matchesSearch && matchesRole && matchesSession;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -404,7 +420,7 @@ const UserRoleManagement = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, roleFilter, sortBy, pageSize]);
+  }, [searchQuery, roleFilter, sessionFilter, sortBy, pageSize]);
 
   const getRoleBadgeClass = (role: string): string => {
     switch (role) {
@@ -506,6 +522,20 @@ const UserRoleManagement = () => {
                     {role.charAt(0).toUpperCase() + role.slice(1)}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select value={sessionFilter} onValueChange={setSessionFilter}>
+              <SelectTrigger className="w-40">
+                <Clock className="h-4 w-4 mr-1" />
+                <SelectValue placeholder="Session status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sessions</SelectItem>
+                <SelectItem value="active">Active Sessions</SelectItem>
+                <SelectItem value="expiring">Expiring Soon</SelectItem>
+                <SelectItem value="expired">Expired Sessions</SelectItem>
+                <SelectItem value="never">Never Logged In</SelectItem>
+                <SelectItem value="inactive">All Inactive</SelectItem>
               </SelectContent>
             </Select>
             <Select value={sortBy} onValueChange={setSortBy}>
