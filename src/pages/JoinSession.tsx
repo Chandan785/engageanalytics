@@ -297,7 +297,7 @@ const JoinSession = () => {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          Powered by FocusTrack · Real-time engagement analytics
+          Powered by Engage Analytics · Real-time engagement analytics
         </p>
       </div>
     </div>
