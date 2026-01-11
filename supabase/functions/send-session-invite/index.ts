@@ -67,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
     for (const email of validEmails) {
       try {
         const emailResponse = await resend.emails.send({
-          from: "FocusTrack <onboarding@resend.dev>",
+          from: "Engage Analytics <onboarding@resend.dev>",
           to: [email.trim()],
           subject: `You're invited to join: ${sessionTitle}`,
           html: `
@@ -87,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
             <body>
               <div class="container">
                 <div class="header">
-                  <div class="logo">FocusTrack</div>
+                  <div class="logo">Engage Analytics</div>
                 </div>
                 
                 <h2>You're Invited! 🎉</h2>
@@ -109,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <p style="color: #888; font-size: 14px;">Or copy this link: ${joinLink}</p>
                 
                 <div class="footer">
-                  <p>FocusTrack - Real-time engagement analytics</p>
+                  <p>Engage Analytics - Real-time engagement analytics</p>
                   <p>This invitation was sent by ${hostName}.</p>
                 </div>
               </div>

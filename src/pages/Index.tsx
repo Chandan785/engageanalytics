@@ -47,6 +47,9 @@ import reportGenerationImg from '@/assets/report-generation.png';
 // Import demo video
 import dashboardDemoVideo from '@/assets/dashboard-demo.mp4';
 
+// Import logo
+import logo from '@/assets/logo.png';
+
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -198,12 +201,7 @@ const Index = () => {
         <div className="container py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                <Activity className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="font-display text-xl font-bold text-foreground">
-                Focus<span className="text-gradient">Track</span>
-              </span>
+              <img src={logo} alt="Engage Analytics" className="h-10 w-auto" />
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
@@ -747,7 +745,7 @@ const Index = () => {
           </div>
           <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2024 FocusTrack. All rights reserved.
+              © 2024 Engage Analytics. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
@@ -777,7 +775,7 @@ const Index = () => {
           <DialogHeader className="p-4 pb-0">
             <DialogTitle className="flex items-center gap-2">
               <Play className="h-5 w-5 text-primary" />
-              FocusTrack Demo
+              Engage Analytics Demo
             </DialogTitle>
           </DialogHeader>
           <div className="relative aspect-video bg-background">
