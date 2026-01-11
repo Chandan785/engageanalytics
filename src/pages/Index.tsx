@@ -48,7 +48,7 @@ import reportGenerationImg from '@/assets/report-generation.png';
 import dashboardDemoVideo from '@/assets/dashboard-demo.mp4';
 
 // Import logo
-import logo from '@/assets/logo.svg';
+import logo from '@/assets/logo.png';
 
 // Animation variants
 const fadeInUp = {

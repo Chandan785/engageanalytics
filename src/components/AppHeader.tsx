@@ -15,7 +15,7 @@ import {
   DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { ArrowLeft, LogOut, Settings, User, Sun, Moon, Monitor, Shield, Video } from 'lucide-react';
-import logo from '@/assets/logo.svg';
+import logo from '@/assets/logo.png';
 
 interface AppHeaderProps {
   backTo?: string;
