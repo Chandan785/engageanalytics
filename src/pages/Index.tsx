@@ -704,12 +704,11 @@ const Index = () => {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-                  <Activity className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="font-display text-xl font-bold text-foreground">
-                  Focus<span className="text-gradient">Track</span>
-                </span>
+                <img 
+                  src={logo} 
+                  alt="Engage Analytics" 
+                  className="h-10 w-auto"
+                />
               </div>
               <p className="text-muted-foreground text-sm">
                 AI-powered engagement analytics for virtual meetings. Fair, objective, privacy-first.
