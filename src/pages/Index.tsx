@@ -8,7 +8,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
-  Activity,
   Video,
   BarChart3,
   Users,
@@ -35,6 +34,7 @@ import {
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ImageLightbox from '@/components/ImageLightbox';
+import { Logo } from '@/components/Logo';
 
 // Import feature images
 import faceRecognitionImg from '@/assets/face-recognition.png';
@@ -197,14 +197,7 @@ const Index = () => {
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                <Activity className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="font-display text-xl font-bold text-foreground">
-                Focus<span className="text-gradient">Track</span>
-              </span>
-            </div>
+            <Logo size="md" />
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
               <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
@@ -705,13 +698,8 @@ const Index = () => {
         <div className="container py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-                  <Activity className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="font-display text-xl font-bold text-foreground">
-                  Focus<span className="text-gradient">Track</span>
-                </span>
+              <div className="mb-4">
+                <Logo size="md" />
               </div>
               <p className="text-muted-foreground text-sm">
                 AI-powered engagement analytics for virtual meetings. Fair, objective, privacy-first.
@@ -747,7 +735,7 @@ const Index = () => {
           </div>
           <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2024 FocusTrack. All rights reserved.
+              © 2024 ENGAGE Analytics. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
@@ -777,7 +765,7 @@ const Index = () => {
           <DialogHeader className="p-4 pb-0">
             <DialogTitle className="flex items-center gap-2">
               <Play className="h-5 w-5 text-primary" />
-              FocusTrack Demo
+              ENGAGE Analytics Demo
             </DialogTitle>
           </DialogHeader>
           <div className="relative aspect-video bg-background">

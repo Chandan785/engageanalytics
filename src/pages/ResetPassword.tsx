@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Loader2, Activity, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
 
 const resetPasswordSchema = z.object({
@@ -159,13 +160,8 @@ const ResetPassword = () => {
 
       <div className="flex-1 flex items-center justify-center px-4 pb-12">
         <div className="w-full max-w-md animate-slide-up">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-              <Activity className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <span className="font-display text-2xl font-bold text-foreground">
-              Engagement<span className="text-gradient">Analyzer</span>
-            </span>
+          <div className="flex items-center justify-center mb-8">
+            <Logo size="lg" />
           </div>
 
           <Card className="glass shadow-lg">
