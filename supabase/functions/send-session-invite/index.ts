@@ -87,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
             <body>
               <div class="container">
                 <div class="header">
-                  <div class="logo">FocusTrack</div>
+                  <div class="logo">ENGAGE Analytics</div>
                 </div>
                 
                 <h2>You're Invited! 🎉</h2>
