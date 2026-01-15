@@ -64,6 +64,24 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
+## Configuring Google Sign-In (Supabase)
+
+If you use Google OAuth for sign-in, make sure you complete these steps to avoid errors during sign-in:
+
+1. In Supabase dashboard, go to Authentication -> Providers and enable **Google**. Add the OAuth Client ID and Client Secret created in Google Cloud Console.
+2. Under the same Authentication settings, add your app redirect URL to **Redirect URLs**. For local development this is typically:
+
+   `http://localhost:5173/dashboard`
+
+   For production, add your deployed origin + `/dashboard` (e.g., `https://app.example.com/dashboard`).
+3. In Google Cloud Console, create OAuth credentials (OAuth Client ID) and add the same redirect URL(s) in the OAuth consent / credentials configuration.
+4. Ensure the following env vars are set in your `.env` or hosting environment:
+
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+After these steps, Google sign-in should work without the "Invalid redirect" or provider configuration errors.
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!

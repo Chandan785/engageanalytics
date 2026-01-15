@@ -5,6 +5,13 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  console.error('[supabase] VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY is not set. Make sure .env has these values and restart the dev server.');
+} else {
+  // Small obfuscated debug for developers (do not log full key in production)
+  console.debug('[supabase] Supabase URL and publishable key loaded — URL:', SUPABASE_URL, 'KEY_PREFIX:', SUPABASE_PUBLISHABLE_KEY?.slice(0,8));
+}
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
@@ -13,5 +20,11 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+  },
+  // Ensure the publishable key is sent as the `apikey` header on every request
+  global: {
+    headers: {
+      apikey: SUPABASE_PUBLISHABLE_KEY
+    }
   }
 });

@@ -60,19 +60,33 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    });
-    
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+
+      if (error) throw error;
+      // On success, Supabase will redirect the user. If it doesn't, we clear the loading state.
+    } catch (err: any) {
+      console.error('Google sign-in error:', err);
+      let message = err?.message || 'An unknown error occurred during Google sign-in.';
+
+      // Provide actionable hints for common misconfigurations
+      if (/redirect/.test(message.toLowerCase())) {
+        message += ` Ensure the redirect URL (${window.location.origin}/dashboard) is added in Supabase Auth settings and in your Google Cloud OAuth credentials.`;
+      } else if (/provider/.test(message.toLowerCase()) || /not enabled/.test(message.toLowerCase())) {
+        message += ' Make sure the Google provider is enabled in Supabase and the OAuth client is properly configured in Google Cloud Console.';
+      }
+
       toast({
         variant: 'destructive',
         title: 'Google sign in failed',
-        description: error.message,
+        description: message,
       });
+    } finally {
       setIsGoogleLoading(false);
     }
   };
