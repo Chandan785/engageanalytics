@@ -114,7 +114,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Engagement Tracker <onboarding@resend.dev>",
+        from: "EngageAnalytic <notifications@engageanalytic.me>",
         to: [profile.email],
         subject: `Your ${roleDisplayName} role has been ${actionText}`,
         html: emailHtml,

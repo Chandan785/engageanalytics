@@ -82,7 +82,7 @@ serve(async (req: Request): Promise<Response> => {
 
     // Send email to host
     const emailResponse = await resend.emails.send({
-      from: "EngageLens <onboarding@resend.dev>",
+      from: "EngageAnalytic <notifications@engageanalytic.me>",
       to: [hostProfile.email],
       subject: `Consent Withdrawn: ${participantName} in "${session.title}"`,
       html: `
