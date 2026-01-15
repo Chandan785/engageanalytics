@@ -114,7 +114,7 @@ serve(async (req: Request): Promise<Response> => {
     // Send emails to all past participants
     const emailPromises = profiles.map(profile =>
       resend.emails.send({
-        from: "EngageLens <onboarding@resend.dev>",
+        from: "EngageAnalytic <notifications@engageanalytic.me>",
         to: [profile.email],
         subject: `New Session: "${session.title}" by ${hostName}`,
         html: `

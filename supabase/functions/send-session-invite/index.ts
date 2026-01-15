@@ -67,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
     for (const email of validEmails) {
       try {
         const emailResponse = await resend.emails.send({
-          from: "FocusTrack <onboarding@resend.dev>",
+          from: "EngageAnalytic <notifications@engageanalytic.me>",
           to: [email.trim()],
           subject: `You're invited to join: ${sessionTitle}`,
           html: `

@@ -109,7 +109,7 @@ serve(async (req: Request): Promise<Response> => {
       const emailPromises = profiles.map(profile => {
         const isHost = profile.user_id === session.host_id;
         return resend.emails.send({
-          from: "EngageLens <onboarding@resend.dev>",
+          from: "EngageAnalytic <notifications@engageanalytic.me>",
           to: [profile.email],
           subject: `Reminder: "${session.title}" starts in 30 minutes`,
           html: `
