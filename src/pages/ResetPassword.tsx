@@ -11,20 +11,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Loader2, Activity, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import PasswordStrengthIndicator, { validatePasswordStrength } from '@/components/PasswordStrengthIndicator';
 
 const resetPasswordSchema = z.object({
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
-}).refine((data) => {
-  const error = validatePasswordStrength(data.password);
-  return error === null;
-}, {
-  message: "Password does not meet security requirements",
-  path: ["password"],
 });
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
@@ -204,7 +197,6 @@ const ResetPassword = () => {
                   {form.formState.errors.password && (
                     <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
                   )}
-                  <PasswordStrengthIndicator password={form.watch('password') || ''} />
                 </div>
 
                 <div className="space-y-2">

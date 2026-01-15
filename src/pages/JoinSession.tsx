@@ -169,8 +169,13 @@ const JoinSession = () => {
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center justify-center mb-8">
-          <img src="/logo.svg" alt="Engage Analytics" className="h-14 w-auto" />
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
+            <Activity className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <span className="font-display text-2xl font-bold text-foreground">
+            Focus<span className="text-gradient">Track</span>
+          </span>
         </div>
 
         <Card className="glass">
@@ -292,7 +297,7 @@ const JoinSession = () => {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          Powered by Engage Analytics · Real-time engagement analytics
+          Powered by FocusTrack · Real-time engagement analytics
         </p>
       </div>
     </div>
