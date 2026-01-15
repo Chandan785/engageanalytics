@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Loader2, Activity, ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import PasswordStrengthIndicator, { validatePasswordStrength } from '@/components/PasswordStrengthIndicator';
+import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
 import MFAVerification from '@/components/MFAVerification';
 
 const signInSchema = z.object({
@@ -26,17 +26,11 @@ const signInSchema = z.object({
 const signUpSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
-}).refine((data) => {
-  const error = validatePasswordStrength(data.password, data.email);
-  return error === null;
-}, {
-  message: "Password does not meet security requirements",
-  path: ["password"],
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;
@@ -607,7 +601,7 @@ const Auth = () => {
                         {signUpForm.formState.errors.password && (
                           <p className="text-sm text-destructive">{signUpForm.formState.errors.password.message}</p>
                         )}
-                        <PasswordStrengthIndicator password={signUpForm.watch('password') || ''} email={signUpForm.watch('email')} />
+                        <PasswordStrengthIndicator password={signUpForm.watch('password') || ''} />
                       </div>
 
                       <div className="space-y-2">
