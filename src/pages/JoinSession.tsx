@@ -8,7 +8,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import {
-  Activity,
   Video,
   Camera,
   Eye,
@@ -17,6 +16,7 @@ import {
   AlertCircle,
   Users,
 } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 import type { Database } from '@/integrations/supabase/types';
 
 type Session = Database['public']['Tables']['sessions']['Row'];
@@ -169,13 +169,8 @@ const JoinSession = () => {
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-            <Activity className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <span className="font-display text-2xl font-bold text-foreground">
-            Focus<span className="text-gradient">Track</span>
-          </span>
+        <div className="flex items-center justify-center mb-8">
+          <Logo size="lg" />
         </div>
 
         <Card className="glass">
@@ -297,7 +292,7 @@ const JoinSession = () => {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          Powered by FocusTrack · Real-time engagement analytics
+          Powered by ENGAGE Analytics · Real-time engagement analytics
         </p>
       </div>
     </div>

@@ -14,7 +14,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
-import { Activity, ArrowLeft, LogOut, Settings, User, Sun, Moon, Monitor, Shield, Video } from 'lucide-react';
+import { ArrowLeft, LogOut, Settings, User, Sun, Moon, Monitor, Shield, Video } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
 interface AppHeaderProps {
   backTo?: string;
@@ -57,26 +58,15 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
                 <span className="hidden sm:inline">{backLabel || 'Back'}</span>
               </Link>
             ) : (
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                  <Activity className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="font-display text-xl font-bold text-foreground">
-                  Engagement<span className="text-gradient">Analyzer</span>
-                </span>
-              </div>
+              <Logo size="md" />
             )}
           </div>
 
           {/* Center Logo (when back button is shown) */}
           {backTo && (
-            <Link to="/dashboard" className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                <Activity className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="font-display text-xl font-bold text-foreground hidden sm:inline">
-                Focus<span className="text-gradient">Track</span>
-              </span>
+            <Link to="/dashboard" className="flex items-center">
+              <Logo size="md" showText={false} className="sm:hidden" />
+              <Logo size="md" className="hidden sm:block" />
             </Link>
           )}
 
