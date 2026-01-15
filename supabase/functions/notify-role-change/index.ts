@@ -91,9 +91,24 @@ const handler = async (req: Request): Promise<Response> => {
               If you have any questions about this change, please contact your administrator.
             </p>
           </div>
-          <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-              This is an automated message from the Engagement Tracker system.
+          <div style="background-color: #1a1a2e; padding: 32px 20px; text-align: center;">
+            <img src="https://engageanalytic.me/logo.png" alt="EngageAnalytic" style="height: 32px; margin-bottom: 16px;" />
+            <p style="color: #a0a0b0; font-size: 14px; margin: 0 0 8px 0;">
+              Real-time engagement analytics for better meetings
+            </p>
+            <div style="margin: 16px 0;">
+              <a href="https://engageanalytic.me" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Website</a>
+              <a href="https://engageanalytic.me/dashboard" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Dashboard</a>
+              <a href="https://engageanalytic.me/support" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Support</a>
+            </div>
+            <hr style="border: none; border-top: 1px solid #2a2a3e; margin: 20px 0;" />
+            <p style="color: #6b6b7b; font-size: 12px; margin: 0 0 8px 0;">
+              © ${new Date().getFullYear()} EngageAnalytic. All rights reserved.
+            </p>
+            <p style="color: #6b6b7b; font-size: 11px; margin: 0;">
+              <a href="https://engageanalytic.me/unsubscribe?email=${encodeURIComponent(profile.email)}" style="color: #6b6b7b; text-decoration: underline;">Unsubscribe</a> · 
+              <a href="https://engageanalytic.me/privacy" style="color: #6b6b7b; text-decoration: underline;">Privacy Policy</a> · 
+              <a href="https://engageanalytic.me/terms" style="color: #6b6b7b; text-decoration: underline;">Terms of Service</a>
             </p>
           </div>
         </div>
