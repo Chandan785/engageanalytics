@@ -14,8 +14,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, LogOut, Settings, User, Sun, Moon, Monitor, Shield, Video } from 'lucide-react';
+import { ArrowLeft, LogOut, Settings, User, Sun, Moon, Monitor, Shield, Video, Menu, X, Home, BarChart3, Calendar, History } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { useState } from 'react';
 
 interface AppHeaderProps {
   backTo?: string;
@@ -27,6 +28,7 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
   const { user, profile, signOut, roles, isAdmin, isHost } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Add cache-busting to avatar URL to force refresh when profile changes
   const avatarUrl = profile?.avatar_url 
@@ -36,6 +38,10 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   const getInitials = (name: string | null | undefined) => {
@@ -67,18 +73,47 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
             )}
           </div>
 
-          {/* Center Logo (when back button is shown) */}
-          {backTo && (
-            <Link to="/dashboard" className="flex items-center">
-              <Logo size="md" showText={false} className="sm:hidden" />
-              <Logo size="md" className="hidden sm:block" />
+          {/* Center Navigation Links - Desktop Only */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+              <Home className="h-4 w-4" />
+              Dashboard
             </Link>
-          )}
+            <Link to="/analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </Link>
+            <Link to="/sessions" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Sessions
+            </Link>
+            <Link to="/session-history" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+              <History className="h-4 w-4" />
+              History
+            </Link>
+          </div>
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
             {rightContent}
             
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle mobile menu"
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+            
+            {/* Desktop User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
@@ -194,6 +229,96 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
             </DropdownMenu>
           </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 space-y-2 animate-in slide-in-from-top-5">
+            <Link
+              to="/dashboard"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              <Home className="h-5 w-5" />
+              Dashboard
+            </Link>
+            <Link
+              to="/analytics"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              <BarChart3 className="h-5 w-5" />
+              Analytics
+            </Link>
+            <Link
+              to="/sessions"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              <Calendar className="h-5 w-5" />
+              Sessions
+            </Link>
+            <Link
+              to="/session-history"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              <History className="h-5 w-5" />
+              History
+            </Link>
+            
+            <div className="h-px bg-border my-2" />
+            
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={closeMobileMenu}
+                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+              >
+                <Shield className="h-5 w-5" />
+                Admin Dashboard
+              </Link>
+            )}
+            {isHost && (
+              <Link
+                to="/host-dashboard"
+                onClick={closeMobileMenu}
+                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+              >
+                <Video className="h-5 w-5" />
+                Host Dashboard
+              </Link>
+            )}
+            <Link
+              to="/profile"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              <User className="h-5 w-5" />
+              Profile
+            </Link>
+            <Link
+              to="/profile"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              <Settings className="h-5 w-5" />
+              Settings
+            </Link>
+            
+            <div className="h-px bg-border my-2" />
+            
+            <button
+              onClick={() => {
+                handleSignOut();
+                closeMobileMenu();
+              }}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg transition-colors w-full"
+            >
+              <LogOut className="h-5 w-5" />
+              Sign Out
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );
