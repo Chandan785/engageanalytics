@@ -31,8 +31,11 @@ import {
   LayoutDashboard,
   X,
   Menu,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
 import ImageLightbox from '@/components/ImageLightbox';
 import { Logo } from '@/components/Logo';
@@ -87,6 +90,7 @@ const Index = () => {
   const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const problemStats = [
     { value: '67%', label: 'of virtual meeting participants admit to multitasking' },
@@ -216,6 +220,18 @@ const Index = () => {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
+              {/* Theme Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Toggle theme"
+                className="relative"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              >
+                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
               {/* Mobile Menu Button */}
               <Button
                 variant="ghost"
