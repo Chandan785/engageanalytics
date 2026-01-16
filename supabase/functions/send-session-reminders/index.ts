@@ -153,13 +153,13 @@ serve(async (req: Request): Promise<Response> => {
                 <a href="https://engageanalytic.me/support" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Support</a>
               </div>
               <hr style="border: none; border-top: 1px solid #2a2a3e; margin: 20px 0;" />
-              <p style="color: #6b6b7b; font-size: 12px; margin: 0 0 8px 0;">
+              <p style="color: #9ca3af; font-size: 12px; margin: 0 0 8px 0;">
                 © 2025 EngageAnalytic. All rights reserved.
               </p>
-              <p style="color: #6b6b7b; font-size: 11px; margin: 0;">
-                <a href="https://engageanalytic.me/unsubscribe?email=${encodeURIComponent(profile.email)}" style="color: #6b6b7b; text-decoration: underline;">Unsubscribe</a> · 
-                <a href="https://engageanalytic.me/privacy" style="color: #6b6b7b; text-decoration: underline;">Privacy Policy</a> · 
-                <a href="https://engageanalytic.me/terms" style="color: #6b6b7b; text-decoration: underline;">Terms of Service</a>
+              <p style="color: #9ca3af; font-size: 11px; margin: 0;">
+                <a href="https://engageanalytic.me/unsubscribe?email=${encodeURIComponent(profile.email)}" style="color: #9ca3af; text-decoration: underline;">Unsubscribe</a> · 
+                <a href="https://engageanalytic.me/privacy" style="color: #9ca3af; text-decoration: underline;">Privacy Policy</a> · 
+                <a href="https://engageanalytic.me/terms" style="color: #9ca3af; text-decoration: underline;">Terms of Service</a>
               </p>
             </div>
           `,
