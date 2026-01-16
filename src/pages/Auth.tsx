@@ -265,19 +265,18 @@ const Auth = () => {
         description: errorMessage,
       });
     } else {
+      // Show email confirmation toast
       toast({
-        title: 'Account created!',
-        description: 'You can now sign in to your account.',
+        title: '✉️ Check your email!',
+        description: 'We sent you a confirmation link. Please verify your email before signing in.',
+        duration: 8000,
       });
       
-      // Check if user was trying to join a session
-      const joinSessionId = sessionStorage.getItem('joinSessionId');
-      if (joinSessionId) {
-        sessionStorage.removeItem('joinSessionId');
-        navigate(`/join/${joinSessionId}`);
-      } else {
-        navigate('/dashboard');
-      }
+      // Switch to sign-in tab
+      setActiveTab('signin');
+      
+      // Reset the signup form
+      signUpForm.reset();
     }
   };
 

@@ -26,6 +26,7 @@ interface AuthContextType {
   isHost: boolean;
   isAdmin: boolean;
   refreshRoles: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -82,6 +83,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await fetchRoles(user.id);
     }
   }, [user?.id, fetchRoles]);
+
+  const refreshProfile = useCallback(async () => {
+    if (user?.id) {
+      await fetchProfile(user.id, user.user_metadata);
+    }
+  }, [user?.id, user?.user_metadata]);
 
   const updateLastLogin = async (userId: string) => {
     await supabase
@@ -224,6 +231,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isHost,
         isAdmin,
         refreshRoles,
+        refreshProfile,
       }}
     >
       {children}

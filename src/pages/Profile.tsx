@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 
 const Profile = () => {
-  const { user, profile, roles, signOut } = useAuth();
+  const { user, profile, roles, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -36,6 +36,23 @@ const Profile = () => {
     full_name: profile?.full_name || '',
     organization: profile?.organization || '',
   });
+
+  // Update formData whenever profile changes
+  useEffect(() => {
+    if (profile && !isEditing) {
+      setFormData({
+        full_name: profile.full_name || '',
+        organization: profile.organization || '',
+      });
+      // Add cache-busting timestamp to avatar URL
+      if (profile.avatar_url) {
+        const baseUrl = profile.avatar_url.split('?')[0];
+        setAvatarUrl(`${baseUrl}?t=${Date.now()}`);
+      } else {
+        setAvatarUrl('');
+      }
+    }
+  }, [profile, isEditing]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -84,7 +101,7 @@ const Profile = () => {
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Update the profile with the new avatar URL
+      // Update the profile with the new avatar URL (without cache-bust param)
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -92,7 +109,12 @@ const Profile = () => {
 
       if (updateError) throw updateError;
 
-      setAvatarUrl(publicUrl + '?t=' + Date.now()); // Cache bust
+      // Immediately update local state with cache-busted URL
+      setAvatarUrl(`${publicUrl}?t=${Date.now()}`);
+      
+      // Refresh profile to get the latest data from database
+      await refreshProfile();
+      
       toast({
         title: 'Avatar updated',
         description: 'Your profile picture has been updated.',
@@ -130,6 +152,9 @@ const Profile = () => {
         description: error.message,
       });
     } else {
+      // Refresh profile to get the latest data
+      await refreshProfile();
+      
       toast({
         title: 'Profile updated',
         description: 'Your profile has been successfully updated.',
@@ -191,7 +216,7 @@ const Profile = () => {
         <div className="text-center mb-8">
           <div className="relative inline-block">
             <Avatar className="h-24 w-24 border-4 border-primary/20">
-              <AvatarImage src={avatarUrl || profile?.avatar_url || undefined} />
+              <AvatarImage src={avatarUrl || undefined} key={avatarUrl} />
               <AvatarFallback className="bg-gradient-primary text-primary-foreground text-2xl font-display">
                 {getInitials(profile?.full_name)}
               </AvatarFallback>

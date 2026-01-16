@@ -28,6 +28,11 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
+  // Add cache-busting to avatar URL to force refresh when profile changes
+  const avatarUrl = profile?.avatar_url 
+    ? `${profile.avatar_url.split('?')[0]}?v=${Date.now()}`
+    : undefined;
+
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
@@ -78,7 +83,7 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
                   <Avatar className="h-10 w-10 border-2 border-primary/20 hover:border-primary/40 transition-colors">
-                    <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || 'User'} />
+                    <AvatarImage src={avatarUrl} alt={profile?.full_name || 'User'} key={avatarUrl} />
                     <AvatarFallback className="bg-gradient-primary text-primary-foreground font-display">
                       {getInitials(profile?.full_name)}
                     </AvatarFallback>
@@ -88,7 +93,7 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
               <DropdownMenuContent align="end" className="w-56">
                 <div className="flex items-center gap-3 p-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={profile?.avatar_url || undefined} />
+                    <AvatarImage src={avatarUrl} key={avatarUrl} />
                     <AvatarFallback className="bg-gradient-primary text-primary-foreground font-display text-sm">
                       {getInitials(profile?.full_name)}
                     </AvatarFallback>

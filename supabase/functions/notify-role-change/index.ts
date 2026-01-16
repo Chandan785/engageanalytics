@@ -129,7 +129,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "EngageAnalytic <notifications@engageanalytic.me>",
+        from: "Engage Analytics <noreply@engageanalytic.me>",
         to: [profile.email],
         subject: `Your ${roleDisplayName} role has been ${actionText}`,
         html: emailHtml,
