@@ -256,19 +256,28 @@ const Auth = () => {
 
     if (error) {
       let errorMessage = error.message;
-      if (error.message.includes('already registered')) {
-        errorMessage = 'This email is already registered. Please sign in instead.';
+      let errorTitle = 'Sign up failed';
+      
+      // Check for email already exists errors
+      if (error.message?.includes('already registered') || error.message?.includes('User already exists')) {
+        errorMessage = `The email "${data.email}" is already registered. Please sign in with this email or use a different email address.`;
+        errorTitle = '📧 Email Already Exists';
+      } else if (error.message?.includes('duplicate')) {
+        errorMessage = `The email "${data.email}" is already in use. Please try another email or sign in if you already have an account.`;
+        errorTitle = '📧 Email Already Exists';
       }
+      
       toast({
         variant: 'destructive',
-        title: 'Sign up failed',
+        title: errorTitle,
         description: errorMessage,
+        duration: 5000,
       });
     } else {
       // Show email confirmation toast
       toast({
         title: '✉️ Check your email!',
-        description: 'We sent you a confirmation link. Please verify your email before signing in.',
+        description: `We sent a confirmation link to ${data.email}. Please verify your email before signing in.`,
         duration: 8000,
       });
       
