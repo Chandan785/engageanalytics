@@ -151,7 +151,7 @@ serve(async (req: Request): Promise<Response> => {
             <div style="margin: 16px 0;">
               <a href="https://engageanalytic.me" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Website</a>
               <a href="https://engageanalytic.me/dashboard" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Dashboard</a>
-              <a href="mailto:support@engageanalytic.me" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Support</a>
+              <a href="https://engageanalytic.me/support" style="color: #8b5cf6; text-decoration: none; margin: 0 12px; font-size: 13px;">Support</a>
             </div>
             <hr style="border: none; border-top: 1px solid #2a2a3e; margin: 20px 0;" />
             <p style="color: #6b6b7b; font-size: 12px; margin: 0 0 8px 0;">

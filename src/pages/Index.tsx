@@ -796,7 +796,7 @@ const Index = () => {
                 <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">API Reference</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="mailto:support@engageanalytic.me" className="hover:text-foreground transition-colors">Support</a></li>
+                <li><Link to="/support" className="hover:text-foreground transition-colors">Support</Link></li>
               </ul>
             </div>
             <div>

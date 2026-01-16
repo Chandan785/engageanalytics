@@ -22,6 +22,7 @@ import JoinSession from "./pages/JoinSession";
 import Analytics from "./pages/Analytics";
 import SessionHistory from "./pages/SessionHistory";
 import NotFound from "./pages/NotFound";
+import Support from "./pages/Support";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/join/:id" element={<JoinSession />} />
+            <Route path="/support" element={<Support />} />
             
             {/* Protected Routes */}
             <Route
