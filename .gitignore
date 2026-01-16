@@ -73,3 +73,5 @@ supabase/.temp/
 # Debug
 .vercel
 .netlify
+
+.vercel
