@@ -59,10 +59,10 @@ interface UserWithRoles {
   last_login_at: string | null;
 }
 
-const AVAILABLE_ROLES = ['admin', 'host', 'participant', 'viewer'] as const;
+const AVAILABLE_ROLES = ['participant', 'viewer', 'host', 'admin', 'super_admin'] as const;
 
 const UserRoleManagement = () => {
-  const { profile } = useAuth();
+  const { profile, isSuperAdmin } = useAuth();
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -156,29 +156,42 @@ const UserRoleManagement = () => {
   const handleAddRole = async () => {
     if (!selectedUser || !roleToAdd) return;
     
+    // ADMIN cannot add ADMIN or SUPER_ADMIN roles
+    if (!isSuperAdmin && (roleToAdd === 'admin' || roleToAdd === 'super_admin')) {
+      toast.error('Only SUPER_ADMIN can assign ADMIN or SUPER_ADMIN roles');
+      return;
+    }
+    
     setActionLoading(true);
     try {
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: selectedUser.user_id,
-          role: roleToAdd as 'admin' | 'host' | 'participant' | 'viewer',
-        });
+      // Skip if user already has the role
+      if (selectedUser.roles.includes(roleToAdd)) {
+        toast.error('User already has this role');
+        setIsDialogOpen(false);
+        setRoleToAdd('');
+        setActionLoading(false);
+        return;
+      }
 
-      if (error) {
-        if (error.code === '23505') {
-          toast.error('User already has this role');
-        } else {
-          throw error;
-        }
-      } else {
+      // Use change_user_role function for validation
+      const { data, error } = await supabase.rpc('change_user_role', {
+        p_admin_user_id: profile?.id,
+        p_target_user_id: selectedUser.user_id,
+        p_new_role: roleToAdd,
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
         toast.success(`Added ${roleToAdd} role to ${selectedUser.full_name || selectedUser.email}`);
         sendRoleChangeNotification(selectedUser.user_id, 'add', roleToAdd);
         fetchUsers();
+      } else {
+        throw new Error(data?.error || 'Failed to add role');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding role:', error);
-      toast.error('Failed to add role');
+      toast.error(error.message || 'Failed to add role');
     } finally {
       setActionLoading(false);
       setIsDialogOpen(false);
@@ -187,7 +200,13 @@ const UserRoleManagement = () => {
   };
 
   const confirmRemoveRole = (userId: string, role: string, userName: string) => {
-    if (role === 'admin') {
+    // Prevent removing SUPER_ADMIN role
+    if (role === 'super_admin' && !isSuperAdmin) {
+      toast.error('Only SUPER_ADMIN can remove SUPER_ADMIN role');
+      return;
+    }
+    
+    if (role === 'admin' || role === 'super_admin') {
       setRoleToRemove({ userId, role, userName });
       setIsRemoveDialogOpen(true);
     } else {
@@ -196,29 +215,44 @@ const UserRoleManagement = () => {
   };
 
   const handleRemoveRole = async (userId: string, role: string) => {
+    // Prevent removing SUPER_ADMIN role
+    if (role === 'super_admin' && !isSuperAdmin) {
+      toast.error('Only SUPER_ADMIN can remove SUPER_ADMIN role');
+      return;
+    }
+
     setActionLoading(true);
     try {
-      const { data, error, count } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', userId)
-        .eq('role', role as 'admin' | 'host' | 'participant' | 'viewer')
-        .select();
+      // Determine downgrade role based on current role
+      let newRole = 'participant'; // Default downgrade
+      
+      if (role === 'admin') {
+        newRole = 'participant';
+      } else if (role === 'super_admin') {
+        newRole = 'admin'; // Downgrade super_admin to admin
+      } else if (role === 'host') {
+        newRole = 'participant';
+      }
+
+      // Use change_user_role function to safely change role
+      const { data, error } = await supabase.rpc('change_user_role', {
+        p_admin_user_id: profile?.id,
+        p_target_user_id: userId,
+        p_new_role: newRole,
+      });
 
       if (error) throw error;
 
-      // Check if any row was actually deleted
-      if (!data || data.length === 0) {
-        toast.error('Failed to remove role - no permission or role not found');
-        return;
+      if (data?.success) {
+        toast.success(`Removed ${role} role - user now has ${newRole} role`);
+        sendRoleChangeNotification(userId, 'remove', role);
+        fetchUsers();
+      } else {
+        throw new Error(data?.error || 'Failed to remove role');
       }
-
-      toast.success(`Removed ${role} role`);
-      sendRoleChangeNotification(userId, 'remove', role);
-      fetchUsers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing role:', error);
-      toast.error('Failed to remove role');
+      toast.error(error.message || 'Failed to remove role');
     } finally {
       setActionLoading(false);
       setIsRemoveDialogOpen(false);
@@ -252,9 +286,16 @@ const UserRoleManagement = () => {
   const handleBulkAddRole = async () => {
     if (!bulkRole || selectedUserIds.size === 0) return;
 
+    // Prevent non-super-admin from assigning admin/super_admin roles
+    if (!isSuperAdmin && (bulkRole === 'admin' || bulkRole === 'super_admin')) {
+      toast.error('Only SUPER_ADMIN can assign ADMIN or SUPER_ADMIN roles');
+      return;
+    }
+
     setActionLoading(true);
     let successCount = 0;
     let skipCount = 0;
+    let errorCount = 0;
 
     try {
       const selectedUsers = users.filter((u) => selectedUserIds.has(u.user_id));
@@ -266,17 +307,18 @@ const UserRoleManagement = () => {
           continue;
         }
 
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: user.user_id,
-            role: bulkRole as 'admin' | 'host' | 'participant' | 'viewer',
-          });
+        const { data, error } = await supabase.rpc('change_user_role', {
+          p_admin_user_id: profile?.id,
+          p_target_user_id: user.user_id,
+          p_new_role: bulkRole,
+        });
 
-        if (!error) {
+        if (!error && data?.success) {
           successCount++;
           // Send notification in background
           sendRoleChangeNotification(user.user_id, 'add', bulkRole);
+        } else {
+          errorCount++;
         }
       }
 
@@ -285,6 +327,9 @@ const UserRoleManagement = () => {
       }
       if (skipCount > 0) {
         toast.info(`${skipCount} user${skipCount > 1 ? 's' : ''} already had the ${bulkRole} role`);
+      }
+      if (errorCount > 0) {
+        toast.error(`Failed to add role to ${errorCount} user${errorCount > 1 ? 's' : ''}`);
       }
 
       fetchUsers();
@@ -302,10 +347,16 @@ const UserRoleManagement = () => {
   const handleBulkRemoveRole = async () => {
     if (!bulkRemoveRole || selectedUserIds.size === 0) return;
 
-    // Show confirmation for admin role
-    if (bulkRemoveRole === 'admin') {
+    // Prevent removing SUPER_ADMIN role unless user is SUPER_ADMIN
+    if (bulkRemoveRole === 'super_admin' && !isSuperAdmin) {
+      toast.error('Only SUPER_ADMIN can remove SUPER_ADMIN role');
+      return;
+    }
+
+    // Show confirmation for admin/super_admin role
+    if (bulkRemoveRole === 'admin' || bulkRemoveRole === 'super_admin') {
       const confirmRemove = window.confirm(
-        `Are you sure you want to remove admin privileges from ${selectedUserIds.size} user(s)? This will revoke their administrative access.`
+        `Are you sure you want to remove ${bulkRemoveRole} privileges from ${selectedUserIds.size} user(s)? This will revoke their access.`
       );
       if (!confirmRemove) return;
     }
@@ -313,6 +364,7 @@ const UserRoleManagement = () => {
     setActionLoading(true);
     let successCount = 0;
     let skipCount = 0;
+    let errorCount = 0;
 
     try {
       const selectedUsers = users.filter((u) => selectedUserIds.has(u.user_id));
@@ -324,19 +376,28 @@ const UserRoleManagement = () => {
           continue;
         }
 
-        const { data, error } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', user.user_id)
-          .eq('role', bulkRemoveRole as 'admin' | 'host' | 'participant' | 'viewer')
-          .select();
+        // Determine downgrade role
+        let newRole = 'participant';
+        if (bulkRemoveRole === 'admin') {
+          newRole = 'participant';
+        } else if (bulkRemoveRole === 'super_admin') {
+          newRole = 'admin';
+        } else if (bulkRemoveRole === 'host') {
+          newRole = 'participant';
+        }
 
-        if (!error && data && data.length > 0) {
+        const { data, error } = await supabase.rpc('change_user_role', {
+          p_admin_user_id: profile?.id,
+          p_target_user_id: user.user_id,
+          p_new_role: newRole,
+        });
+
+        if (!error && data?.success) {
           successCount++;
           // Send notification in background
           sendRoleChangeNotification(user.user_id, 'remove', bulkRemoveRole);
-        } else if (!error) {
-          skipCount++;
+        } else {
+          errorCount++;
         }
       }
 
@@ -345,6 +406,9 @@ const UserRoleManagement = () => {
       }
       if (skipCount > 0) {
         toast.info(`${skipCount} user${skipCount > 1 ? 's' : ''} didn't have the ${bulkRemoveRole} role`);
+      }
+      if (errorCount > 0) {
+        toast.error(`Failed to remove role from ${errorCount} user${errorCount > 1 ? 's' : ''}`);
       }
 
       fetchUsers();
@@ -370,11 +434,23 @@ const UserRoleManagement = () => {
       user.roles.forEach((role) => allRoles.add(role));
     });
     
-    return Array.from(allRoles);
+    let rolesArray = Array.from(allRoles);
+    
+    // ADMIN cannot remove ADMIN or SUPER_ADMIN roles
+    if (!isSuperAdmin) {
+      rolesArray = rolesArray.filter((role) => role !== 'admin' && role !== 'super_admin');
+    }
+    
+    return rolesArray;
   };
 
   const filteredUsers = users
     .filter((user) => {
+      // ADMIN cannot see SUPER_ADMIN users
+      if (!isSuperAdmin && user.roles.includes('super_admin')) {
+        return false;
+      }
+      
       const matchesSearch =
         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (user.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase());
@@ -446,7 +522,14 @@ const UserRoleManagement = () => {
   };
 
   const getAvailableRolesForUser = (user: UserWithRoles) => {
-    return AVAILABLE_ROLES.filter((role) => !user.roles.includes(role));
+    let availableRoles = AVAILABLE_ROLES.filter((role) => !user.roles.includes(role));
+    
+    // ADMIN cannot see/assign ADMIN or SUPER_ADMIN roles
+    if (!isSuperAdmin) {
+      availableRoles = availableRoles.filter((role) => role !== 'admin' && role !== 'super_admin');
+    }
+    
+    return availableRoles;
   };
 
   const exportToCSV = () => {
@@ -883,7 +966,7 @@ const UserRoleManagement = () => {
                 <SelectValue placeholder="Select a role to assign" />
               </SelectTrigger>
               <SelectContent>
-                {AVAILABLE_ROLES.map((role) => (
+                {AVAILABLE_ROLES.filter((role) => isSuperAdmin || (role !== 'admin' && role !== 'super_admin')).map((role) => (
                   <SelectItem key={role} value={role} className="capitalize">
                     {role}
                   </SelectItem>
