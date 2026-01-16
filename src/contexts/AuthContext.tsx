@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-type UserRole = 'host' | 'participant' | 'viewer' | 'admin';
+type UserRole = 'host' | 'participant' | 'viewer' | 'admin' | 'super_admin';
 
 interface Profile {
   id: string;
@@ -25,6 +25,8 @@ interface AuthContextType {
   hasRole: (role: UserRole) => boolean;
   isHost: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
+  userRole: UserRole | null;
   refreshRoles: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -213,8 +215,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const hasRole = (role: UserRole) => roles.includes(role);
-  const isHost = hasRole('host') || hasRole('admin');
-  const isAdmin = hasRole('admin');
+  const isSuperAdmin = hasRole('super_admin');
+  const isAdmin = hasRole('admin') || isSuperAdmin; // SUPER_ADMIN has all ADMIN permissions
+  const isHost = hasRole('host') || hasRole('admin') || isSuperAdmin;
+  const userRole = roles.length > 0 ? roles[0] : null;
 
   return (
     <AuthContext.Provider
@@ -230,6 +234,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         hasRole,
         isHost,
         isAdmin,
+        isSuperAdmin,
+        userRole,
         refreshRoles,
         refreshProfile,
       }}
