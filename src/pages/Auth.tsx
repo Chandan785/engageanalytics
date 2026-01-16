@@ -251,6 +251,32 @@ const Auth = () => {
 
   const handleSignUp = async (data: SignUpFormData) => {
     setIsLoading(true);
+    
+    // First, check if user already exists by trying to sign in
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: 'dummy-password-check', // Wrong password to trigger error
+      });
+
+      // If the error says "Invalid login credentials", user exists but password is wrong
+      // If no error or different error, user doesn't exist yet
+      if (signInError?.message?.includes('Invalid login credentials')) {
+        // User already exists!
+        setIsLoading(false);
+        toast({
+          variant: 'destructive',
+          title: '📧 Email Already Exists',
+          description: `The email "${data.email}" is already registered. Please sign in with this email or use a different email address.`,
+          duration: 6000,
+        });
+        return;
+      }
+    } catch (err) {
+      // Continue with signup
+    }
+
+    // If we get here, email doesn't exist, so proceed with signup
     const { error } = await signUp(data.email, data.password, data.fullName);
     setIsLoading(false);
 
@@ -258,32 +284,14 @@ const Auth = () => {
       let errorMessage = error.message;
       let errorTitle = 'Sign up failed';
       
-      // Check for email already exists errors (multiple variations)
-      const errorLower = error.message?.toLowerCase() || '';
-      
-      if (
-        errorLower.includes('already registered') || 
-        errorLower.includes('user already exists') ||
-        errorLower.includes('duplicate') ||
-        errorLower.includes('email already') ||
-        errorLower.includes('user with') ||
-        error.message?.includes('AuthWeakPasswordError') === false // Not a weak password error
-      ) {
-        // This is likely an existing user error
-        if (errorLower.includes('already') || errorLower.includes('exists') || errorLower.includes('duplicate')) {
-          errorMessage = `The email "${data.email}" is already registered. Please sign in with this email or use a different email address.`;
-          errorTitle = '📧 Email Already Exists';
-        }
-      }
-      
       toast({
         variant: 'destructive',
         title: errorTitle,
         description: errorMessage,
-        duration: 6000,
+        duration: 5000,
       });
     } else {
-      // Show email confirmation toast
+      // Show email confirmation toast ONLY for new users
       toast({
         title: '✉️ Check your email!',
         description: `We sent a confirmation link to ${data.email}. Please verify your email before signing in.`,
