@@ -258,20 +258,29 @@ const Auth = () => {
       let errorMessage = error.message;
       let errorTitle = 'Sign up failed';
       
-      // Check for email already exists errors
-      if (error.message?.includes('already registered') || error.message?.includes('User already exists')) {
-        errorMessage = `The email "${data.email}" is already registered. Please sign in with this email or use a different email address.`;
-        errorTitle = '📧 Email Already Exists';
-      } else if (error.message?.includes('duplicate')) {
-        errorMessage = `The email "${data.email}" is already in use. Please try another email or sign in if you already have an account.`;
-        errorTitle = '📧 Email Already Exists';
+      // Check for email already exists errors (multiple variations)
+      const errorLower = error.message?.toLowerCase() || '';
+      
+      if (
+        errorLower.includes('already registered') || 
+        errorLower.includes('user already exists') ||
+        errorLower.includes('duplicate') ||
+        errorLower.includes('email already') ||
+        errorLower.includes('user with') ||
+        error.message?.includes('AuthWeakPasswordError') === false // Not a weak password error
+      ) {
+        // This is likely an existing user error
+        if (errorLower.includes('already') || errorLower.includes('exists') || errorLower.includes('duplicate')) {
+          errorMessage = `The email "${data.email}" is already registered. Please sign in with this email or use a different email address.`;
+          errorTitle = '📧 Email Already Exists';
+        }
       }
       
       toast({
         variant: 'destructive',
         title: errorTitle,
         description: errorMessage,
-        duration: 5000,
+        duration: 6000,
       });
     } else {
       // Show email confirmation toast
