@@ -1,0 +1,321 @@
+// ====================================================================
+// ADMIN DASHBOARD INTEGRATION GUIDE
+// Copy these code snippets into your AdminDashboard.tsx
+// ====================================================================
+
+// Step 1: Add these imports at the top of AdminDashboard.tsx
+import { SuperAdminTransfer } from '@/components/admin/SuperAdminTransfer';
+import { EnhancedRoleManagement } from '@/components/admin/EnhancedRoleManagement';
+
+// ====================================================================
+// Step 2: Update the component - Find the Tabs section
+// ====================================================================
+
+// BEFORE (Current code):
+/*
+<Tabs defaultValue="overview">
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="users">Users</TabsTrigger>
+    <TabsTrigger value="sessions">Sessions</TabsTrigger>
+  </TabsList>
+  
+  <TabsContent value="overview">
+    {/* Overview content */}
+  </TabsContent>
+  
+  <TabsContent value="users">
+    {/* Users content */}
+  </TabsContent>
+</Tabs>
+*/
+
+// AFTER (Updated code):
+<Tabs defaultValue="overview">
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="users">Users</TabsTrigger>
+    <TabsTrigger value="roles">Role Management</TabsTrigger>
+    <TabsTrigger value="sessions">Sessions</TabsTrigger>
+  </TabsList>
+  
+  <TabsContent value="overview">
+    {/* Overview content - unchanged */}
+  </TabsContent>
+  
+  <TabsContent value="users">
+    {/* Users content - unchanged */}
+  </TabsContent>
+  
+  {/* NEW: Role Management Tab */}
+  <TabsContent value="roles" className="space-y-6">
+    {/* Section 1: SUPER_ADMIN Transfer (only for SUPER_ADMIN users) */}
+    {userRole === 'super_admin' && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-purple-600" />
+            SUPER_ADMIN Ownership Transfer
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SuperAdminTransfer 
+            currentUserId={user?.id || ''}
+            currentUserRole={userRole}
+          />
+        </CardContent>
+      </Card>
+    )}
+    
+    {/* Section 2: Enhanced Role Management (for ADMIN & SUPER_ADMIN) */}
+    {(userRole === 'admin' || userRole === 'super_admin') && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <UserCog className="h-5 w-5" />
+            User Role Management
+          </CardTitle>
+          <CardDescription>
+            {userRole === 'super_admin'
+              ? 'Manage all user roles. SUPER_ADMIN can assign any role.'
+              : 'As ADMIN, you can only manage PARTICIPANT, HOST, and VIEWER roles.'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EnhancedRoleManagement 
+            currentUserId={user?.id || ''}
+            currentUserRole={userRole}
+          />
+        </CardContent>
+      </Card>
+    )}
+  </TabsContent>
+  
+  <TabsContent value="sessions">
+    {/* Sessions content - unchanged */}
+  </TabsContent>
+</Tabs>
+
+// ====================================================================
+// Step 3: Import additional icons if needed
+// ====================================================================
+
+// Add to existing imports from lucide-react:
+import { Crown, UserCog } from 'lucide-react';
+
+// Or if you already have lucide-react imported, just add to the list:
+// import { 
+//   Shield,
+//   Users,
+//   Video,
+//   BarChart3,
+//   Settings,
+//   UserCog,      // <- Add this
+//   Activity,
+//   AlertTriangle,
+//   Crown,        // <- Add this
+// } from 'lucide-react';
+
+// ====================================================================
+// Step 4: Ensure you have userRole from useAuth()
+// ====================================================================
+
+// Your useAuth hook should already have this, but verify:
+const { user, isAdmin, userRole } = useAuth();
+
+// If not, update your AuthContext to export userRole:
+// const userRole = roles?.[0] || 'participant'; // Get user's highest role
+
+// ====================================================================
+// Optional: Add a warning banner for SUPER_ADMIN
+// ====================================================================
+
+/*
+<Card className="border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950">
+  <CardContent className="pt-6">
+    <div className="flex gap-3">
+      <AlertTriangle className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
+      <div>
+        <p className="font-semibold text-purple-900 dark:text-purple-100">
+          SUPER_ADMIN Status Active
+        </p>
+        <p className="text-sm text-purple-700 dark:text-purple-200">
+          You have complete administrative control. Use ownership transfer to delegate 
+          SUPER_ADMIN privileges when needed.
+        </p>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+*/
+
+// ====================================================================
+// Full Component Structure Example
+// ====================================================================
+
+/*
+const AdminDashboard = () => {
+  const { user, isAdmin, userRole } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // ... existing state and effects ...
+  
+  return (
+    <div className="space-y-8">
+      <AppHeader />
+      
+      {!isAdmin ? (
+        <div>Access Denied</div>
+      ) : (
+        <>
+          {/* Header Section */}
+          <div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage users, sessions, and analytics</p>
+          </div>
+          
+          {/* Tabs Section with Role Management */}
+          <Tabs defaultValue="overview">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="users">Users</TabsTrigger>
+              <TabsTrigger value="roles">Role Management</TabsTrigger>
+              <TabsTrigger value="sessions">Sessions</TabsTrigger>
+            </TabsList>
+            
+            {/* ... other tabs ... */}
+            
+            {/* Role Management Tab */}
+            <TabsContent value="roles" className="space-y-6">
+              {userRole === 'super_admin' && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Crown className="h-5 w-5 text-purple-600" />
+                      SUPER_ADMIN Ownership Transfer
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <SuperAdminTransfer 
+                      currentUserId={user?.id || ''}
+                      currentUserRole={userRole}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+              
+              {(userRole === 'admin' || userRole === 'super_admin') && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <UserCog className="h-5 w-5" />
+                      User Role Management
+                    </CardTitle>
+                    <CardDescription>
+                      Manage all user roles and permissions
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <EnhancedRoleManagement 
+                      currentUserId={user?.id || ''}
+                      currentUserRole={userRole}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+          </Tabs>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default AdminDashboard;
+*/
+
+// ====================================================================
+// TESTING IN DEVELOPMENT
+// ====================================================================
+
+/*
+1. Start dev server:
+   npm run dev
+
+2. Login as SUPER_ADMIN user
+
+3. Go to: http://localhost:5173/admin
+
+4. Click "Role Management" tab
+
+5. Should see:
+   ✅ "SUPER_ADMIN Ownership Transfer" section (purple card)
+   ✅ "User Role Management" section (user list)
+
+6. Test Transfer:
+   - Click "Select New SUPER_ADMIN"
+   - Choose an ADMIN user
+   - Click "Confirm Transfer"
+   - Should succeed with toast notification
+
+7. Test Role Change:
+   - Click "Change Role" on a user
+   - Select new role from dropdown
+   - Click "Confirm Change"
+   - Should succeed
+
+8. Check Audit Logs:
+   SELECT * FROM role_audit_logs 
+   ORDER BY created_at DESC LIMIT 10;
+*/
+
+// ====================================================================
+// TROUBLESHOOTING
+// ====================================================================
+
+/*
+Problem: Components not showing
+Solution:
+  1. Check imports are correct
+  2. Verify userRole is passed correctly
+  3. Check browser console for errors
+  4. Verify SQL migration was applied
+
+Problem: "Only SUPER_ADMIN can" errors
+Solution:
+  1. Login with a different admin account
+  2. Verify user has super_admin role in database
+  3. Check user_roles table: SELECT * FROM user_roles WHERE user_id = 'xyz';
+
+Problem: Transfer button disabled
+Solution:
+  1. Your user must be SUPER_ADMIN
+  2. Must select a different user
+  3. Target user must exist
+
+Problem: "Cannot remove last SUPER_ADMIN"
+Solution:
+  1. This is protection working correctly
+  2. Assign SUPER_ADMIN to another user first
+  3. Then you can downgrade yourself
+*/
+
+// ====================================================================
+// SUCCESS CRITERIA
+// ====================================================================
+
+/*
+After integration, verify:
+
+✅ Components import without errors
+✅ "Role Management" tab appears in Admin Dashboard
+✅ SUPER_ADMIN sees both transfer and role management sections
+✅ ADMIN sees only role management section
+✅ Can transfer SUPER_ADMIN to another user
+✅ Can change user roles with ADMIN
+✅ Error messages appear when trying invalid actions
+✅ Audit logs record all changes
+✅ Vercel deployment succeeds
+✅ Production works same as development
+*/
