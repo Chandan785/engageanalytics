@@ -796,7 +796,7 @@ const Index = () => {
                 <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">API Reference</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Support</a></li>
+                <li><a href="mailto:support@engageanalytic.me" className="hover:text-foreground transition-colors">Support</a></li>
               </ul>
             </div>
             <div>
@@ -811,7 +811,7 @@ const Index = () => {
           </div>
           <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2024 ENGAGE Analytics. All rights reserved.
+              © 2025 ENGAGE Analytics. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
