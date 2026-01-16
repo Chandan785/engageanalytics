@@ -1,8 +1,76 @@
-# ENGAGE Analytics
+# 🎯 ENGAGE Analytics
 
-## Project info
+**AI-Powered Real-Time Engagement Analytics Platform for Virtual Meetings**
 
-**Project**: AI-Powered Engagement Analytics Platform
+---
+
+## 🌐 Live Application URLs
+
+> **Access the application now:**
+
+🔗 **Primary Domain:** https://engageanalytic.me  
+🔗 **WWW Subdomain:** https://www.engageanalytic.me  
+🔗 **Vercel Backup:** https://engage-analytics.vercel.app  
+
+---
+
+## 📋 Project Info
+
+**Project**: AI-Powered Engagement Analytics Platform  
+**Status**: ✅ Production Ready  
+**Version**: 1.0.0  
+**Last Updated**: January 16, 2026
+
+---
+
+## ⚡ Quick Start
+
+### For Users
+1. Visit: **https://engageanalytic.me**
+2. Click **"Sign Up"** to create an account
+3. Verify your email
+4. Login and start using the app!
+
+**Test Accounts** (pre-verified, no email needed):
+```
+Email: testuser1@engagetest.com
+Password: TestPass123!
+```
+
+### For Developers
+```bash
+# Clone the repository
+git clone https://github.com/Chandan785/engageanalytics.git
+cd "Engage Analytics"
+
+# Install dependencies
+npm install
+
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your Supabase and Resend API keys
+
+# Start development server
+npm run dev
+# App runs on http://localhost:8081
+```
+
+**For detailed setup instructions, see [README_SETUP.md](./README_SETUP.md)**
+
+---
+
+## ✨ Key Features
+
+✅ Real-time engagement analytics  
+✅ Face detection & recognition  
+✅ Gesture detection  
+✅ Engagement scoring  
+✅ User authentication  
+✅ Email notifications  
+✅ Profile management  
+✅ Admin dashboard  
+
+---
 
 ## How can I edit this code?
 
