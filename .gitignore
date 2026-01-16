@@ -75,3 +75,4 @@ supabase/.temp/
 .netlify
 
 .vercel
+.env*.local

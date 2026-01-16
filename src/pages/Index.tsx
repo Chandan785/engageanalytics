@@ -30,6 +30,7 @@ import {
   Laptop,
   LayoutDashboard,
   X,
+  Menu,
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -85,6 +86,7 @@ const Index = () => {
   const [activeFeature, setActiveFeature] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const problemStats = [
     { value: '67%', label: 'of virtual meeting participants admit to multitasking' },
@@ -205,17 +207,75 @@ const Index = () => {
               <a href="#dashboard" className="text-muted-foreground hover:text-foreground transition-colors">Dashboard</a>
             </div>
             <div className="flex items-center gap-4">
-              <Link to="/auth">
-                <Button variant="ghost" className="hidden sm:inline-flex">Sign In</Button>
+              <Link to="/auth" className="hidden sm:inline-flex">
+                <Button variant="ghost">Sign In</Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/auth" className="hidden sm:inline-flex">
                 <Button className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-md">
                   Get Started
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle mobile menu"
+                aria-expanded={isMobileMenuOpen}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
             </div>
           </div>
+          
+          {/* Mobile Menu Dropdown */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden mt-4 py-4 border-t border-border animate-in slide-in-from-top-5 duration-200">
+              <div className="flex flex-col gap-4">
+                <a 
+                  href="#features" 
+                  className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Features
+                </a>
+                <a 
+                  href="#how-it-works" 
+                  className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  How It Works
+                </a>
+                <a 
+                  href="#use-cases" 
+                  className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Use Cases
+                </a>
+                <a 
+                  href="#dashboard" 
+                  className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </a>
+                <div className="pt-2 border-t border-border flex flex-col gap-2">
+                  <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">Sign In</Button>
+                  </Link>
+                  <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button className="w-full bg-gradient-primary hover:opacity-90 transition-opacity shadow-md">
+                      Get Started
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
