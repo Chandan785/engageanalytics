@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 const RoleBasedRedirect = () => {
-  const { isAdmin, isHost, loading, user } = useAuth();
+  const { isAdmin, isSuperAdmin, isHost, loading, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,15 +15,15 @@ const RoleBasedRedirect = () => {
       return;
     }
 
-    // Redirect based on role priority: admin > host > participant
-    if (isAdmin) {
+    // Redirect based on role priority: super_admin/admin > host > participant
+    if (isAdmin || isSuperAdmin) {
       navigate('/admin', { replace: true });
     } else if (isHost) {
       navigate('/host-dashboard', { replace: true });
     } else {
       navigate('/participant-dashboard', { replace: true });
     }
-  }, [isAdmin, isHost, loading, user, navigate]);
+  }, [isAdmin, isSuperAdmin, isHost, loading, user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center">

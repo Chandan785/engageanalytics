@@ -25,7 +25,7 @@ interface AppHeaderProps {
 }
 
 export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) => {
-  const { user, profile, signOut, roles, isAdmin, isHost } = useAuth();
+  const { user, profile, signOut, roles, isAdmin, isHost, isSuperAdmin } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -161,7 +161,7 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
                   </div>
                 </div>
                 <DropdownMenuSeparator />
-                {isAdmin && (
+                {(isAdmin || isSuperAdmin) && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin" className="cursor-pointer">
                       <Shield className="mr-2 h-4 w-4" />
@@ -268,7 +268,7 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
             
             <div className="h-px bg-border my-2" />
             
-            {isAdmin && (
+            {(isAdmin || isSuperAdmin) && (
               <Link
                 to="/admin"
                 onClick={closeMobileMenu}

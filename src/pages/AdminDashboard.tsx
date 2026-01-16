@@ -31,7 +31,7 @@ interface UserWithRole {
 }
 
 const AdminDashboard = () => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [totalUsers, setTotalUsers] = useState(0);
@@ -41,7 +41,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAdmin) {
+    if (!isAdmin && !isSuperAdmin) {
       toast({
         variant: 'destructive',
         title: 'Access Denied',
@@ -52,7 +52,7 @@ const AdminDashboard = () => {
     }
 
     fetchAdminStats();
-  }, [isAdmin, navigate]);
+  }, [isAdmin, isSuperAdmin, navigate]);
 
   const fetchAdminStats = async () => {
     try {
@@ -113,7 +113,7 @@ const AdminDashboard = () => {
     }
   };
 
-  if (!isAdmin) {
+  if (!isAdmin && !isSuperAdmin) {
     return null;
   }
 
