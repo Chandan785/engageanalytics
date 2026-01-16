@@ -92,7 +92,10 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
           </div>
           <div style="background-color: #1a1a2e; padding: 32px 20px; text-align: center;">
-            <img src="https://engageanalytic.me/logo.svg" alt="EngageAnalytic" style="height: 48px; margin-bottom: 16px; display: block; margin-left: auto; margin-right: auto;" />
+            <div style="margin-bottom: 16px;">
+              <span style="font-size: 24px; font-weight: 700; color: #0F2A44; background: linear-gradient(135deg, #2D9A95 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ENGAGE</span>
+              <span style="font-size: 18px; font-weight: 500; color: #2D9A95; margin-left: 8px; letter-spacing: 2px;">Analytics</span>
+            </div>
             <p style="color: #e5e7eb; font-size: 14px; margin: 0 0 8px 0;">
               Real-time engagement analytics for better meetings
             </p>

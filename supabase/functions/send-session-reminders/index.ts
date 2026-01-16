@@ -141,9 +141,10 @@ serve(async (req: Request): Promise<Response> => {
             </div>
             
             <div style="background-color: #1a1a2e; border-radius: 0 0 12px 12px; padding: 32px 20px; text-align: center;">
-              <p style="color: #a0a0b0; font-size: 14px; margin: 0 0 8px 0; font-weight: 600;">
-                EngageAnalytic
-              </p>
+              <div style="margin-bottom: 16px;">
+                <span style="font-size: 24px; font-weight: 700; color: #2D9A95;">ENGAGE</span>
+                <span style="font-size: 18px; font-weight: 500; color: #8b5cf6; margin-left: 8px; letter-spacing: 2px;">Analytics</span>
+              </div>
               <p style="color: #a0a0b0; font-size: 13px; margin: 0 0 16px 0;">
                 Real-time engagement analytics for better meetings
               </p>

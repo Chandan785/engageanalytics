@@ -109,9 +109,10 @@ const handler = async (req: Request): Promise<Response> => {
                 <p style="color: #888; font-size: 14px;">Or copy this link: ${joinLink}</p>
                 
                 <div style="background-color: #1a1a2e; border-radius: 12px; padding: 32px 20px; text-align: center; margin-top: 30px;">
-                  <p style="color: #a0a0b0; font-size: 14px; margin: 0 0 8px 0; font-weight: 600;">
-                    EngageAnalytic
-                  </p>
+                  <div style="margin-bottom: 16px;">
+                    <span style="font-size: 24px; font-weight: 700; color: #2D9A95;">ENGAGE</span>
+                    <span style="font-size: 18px; font-weight: 500; color: #8b5cf6; margin-left: 8px; letter-spacing: 2px;">Analytics</span>
+                  </div>
                   <p style="color: #e5e7eb; font-size: 13px; margin: 0 0 16px 0;">
                     Real-time engagement analytics for better meetings
                   </p>
