@@ -76,3 +76,13 @@ supabase/.temp/
 
 .vercel
 .env*.local
+# README files
+README*.md
+SUPER_ADMIN*.md
+DELIVERY*.md
+EMAIL*.md
+ADMIN*.md
+COMPLETE*.md
+SESSION*.md
+RESEND*.md
+RESEARCH*.md
