@@ -201,10 +201,10 @@ CREATE POLICY "Participants can view sessions they're part of"
     )
   );
 
-CREATE POLICY "Authenticated users can view active sessions by link"
+CREATE POLICY "Authenticated users can view active or scheduled sessions by link"
   ON public.sessions FOR SELECT
   TO authenticated
-  USING (status = 'active');
+  USING (status = 'active' OR status = 'scheduled');
 
 -- RLS Policies for participants
 CREATE POLICY "Users can view their own participation"
