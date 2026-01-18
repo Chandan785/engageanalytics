@@ -380,6 +380,30 @@ DEBUG=true                         # Enable debug logging
 
 ## Troubleshooting
 
+### Participant Can't Join After Logging In
+
+**Symptom:** Unauthenticated user sees "Session is live" → clicks "Sign in to Join" → after login, they don't see the session and can't join
+
+**Cause:** RLS policy restriction for authenticated users
+
+**Fix:** Apply the RLS policy update to your Supabase database:
+
+1. Open Supabase Dashboard → SQL Editor
+2. Create a new query and paste:
+```sql
+DROP POLICY IF EXISTS "Authenticated users can view active sessions by link" ON public.sessions;
+CREATE POLICY "Authenticated users can view active or scheduled sessions by link"
+  ON public.sessions FOR SELECT
+  TO authenticated
+  USING (status = 'active' OR status = 'scheduled');
+```
+3. Click "Run"
+4. Refresh your browser
+
+**Alternative:** Deploy the latest code which includes migration `20260118120000_fix_auth_sessions_rls.sql`
+
+---
+
 ### Port Already in Use
 
 ```bash
