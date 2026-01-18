@@ -15,6 +15,14 @@ const RoleBasedRedirect = () => {
       return;
     }
 
+    // Check if user was trying to join a session before logging in
+    const joinSessionId = sessionStorage.getItem('joinSessionId');
+    if (joinSessionId) {
+      sessionStorage.removeItem('joinSessionId');
+      navigate(`/join/${joinSessionId}`, { replace: true });
+      return;
+    }
+
     // Redirect based on role priority: super_admin/admin > host > participant
     if (isAdmin || isSuperAdmin) {
       navigate('/admin', { replace: true });
