@@ -327,17 +327,13 @@ const JoinSession = () => {
                       You need to be signed in to join this session
                     </p>
                   </div>
-                ) : !isActive ? (
-                  <Button className="w-full" disabled>
-                    Session Not Active
-                  </Button>
                 ) : (
                   <Button 
                     className="w-full bg-gradient-primary hover:opacity-90"
-                    disabled={!consentGiven || joining}
+                    disabled={!consentGiven || joining || !isActive}
                     onClick={handleJoin}
                   >
-                    {joining ? 'Joining...' : 'Join Session'}
+                    {joining ? 'Joining...' : !isActive ? 'Waiting for session to start...' : 'Join Session'}
                   </Button>
                 )}
               </>
