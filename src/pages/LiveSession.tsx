@@ -72,11 +72,21 @@ const LiveSession = () => {
         return;
       }
 
-      if (data.status !== 'active') {
+      if (data.status === 'cancelled') {
         toast({
           variant: 'destructive',
-          title: 'Session not active',
-          description: 'This session is not currently active.',
+          title: 'Session cancelled',
+          description: 'This session has been cancelled.',
+        });
+        navigate('/sessions');
+        return;
+      }
+
+      if (data.status === 'completed') {
+        toast({
+          variant: 'destructive',
+          title: 'Session ended',
+          description: 'This session has ended.',
         });
         navigate(`/session/${id}`);
         return;
@@ -87,7 +97,52 @@ const LiveSession = () => {
     };
 
     fetchSession();
-  }, [id, navigate, toast]);
+
+    // Subscribe to real-time session status changes
+    const channel = supabase
+      .channel(`session:${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'sessions',
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          const updatedSession = payload.new as Session;
+          
+          if (updatedSession.status === 'cancelled') {
+            toast({
+              variant: 'destructive',
+              title: 'Session cancelled',
+              description: 'The session has been cancelled.',
+            });
+            navigate('/sessions');
+            return;
+          }
+
+          if (updatedSession.status === 'completed') {
+            stopDetection();
+            toast({
+              variant: 'destructive',
+              title: 'Session ended',
+              description: 'The session has ended.',
+            });
+            navigate(`/session/${id}`);
+            return;
+          }
+
+          // Update session if status changes
+          setSession(updatedSession);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, navigate, toast, stopDetection]);
 
   // Check if user needs to give consent
   useEffect(() => {

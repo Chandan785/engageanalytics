@@ -53,14 +53,24 @@ const JoinSession = () => {
         return;
       }
 
-      if (data.status !== 'active') {
+      if (data.status === 'cancelled') {
         toast({
           variant: 'destructive',
-          title: 'Session not available',
-          description: data.status === 'completed' 
-            ? 'This session has ended.' 
-            : 'This session has not started yet.',
+          title: 'Session cancelled',
+          description: 'This session has been cancelled.',
         });
+        navigate('/');
+        return;
+      }
+
+      if (data.status === 'completed') {
+        toast({
+          variant: 'destructive',
+          title: 'Session ended',
+          description: 'This session has ended.',
+        });
+        navigate('/');
+        return;
       }
 
       setSession(data);
@@ -84,6 +94,50 @@ const JoinSession = () => {
     };
 
     fetchSession();
+
+    // Subscribe to real-time session status changes
+    const channel = supabase
+      .channel(`session:${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'sessions',
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          const updatedSession = payload.new as Session;
+          
+          if (updatedSession.status === 'cancelled') {
+            toast({
+              variant: 'destructive',
+              title: 'Session cancelled',
+              description: 'The session has been cancelled.',
+            });
+            navigate('/');
+            return;
+          }
+
+          if (updatedSession.status === 'completed') {
+            toast({
+              variant: 'destructive',
+              title: 'Session ended',
+              description: 'The session has ended.',
+            });
+            navigate('/');
+            return;
+          }
+
+          // Update session if it becomes active or changes
+          setSession(updatedSession);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [id, user, navigate, toast]);
 
   const handleJoin = async () => {
