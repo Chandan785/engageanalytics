@@ -77,14 +77,14 @@ supabase/.temp/
 .vercel
 .env*.local
 
-# Documentation files (excluding main README)
+# Documentation files (excluding main README and docs folder)
 !README.md
+!docs/
 README*.md
 SUPER_ADMIN*.md
 DELIVERY*.md
 EMAIL*.md
 ADMIN*.md
-COMPLETE*.md
 SESSION*.md
 RESEND*.md
 RESEARCH*.md
