@@ -1,609 +1,222 @@
-# ENGAGE Analytics
+# 🎯 ENGAGE Analytics
 
-> **AI-Powered Engagement Analytics for Virtual Meetings**
-> 
-> Stop Guessing Who's Actually Engaged. Measure attention, not just attendance.
-
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-engageanalytic.me-blue?style=flat-square)](https://engageanalytic.me)
-[![GitHub](https://img.shields.io/badge/GitHub-Chandan785%2Fengageanalytics-black?style=flat-square&logo=github)](https://github.com/Chandan785/engageanalytics)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![Compliance](https://img.shields.io/badge/Compliance-SOC%202%20%7C%20GDPR-blue?style=flat-square)]()
+**AI-Powered Real-Time Engagement Analytics Platform for Virtual Meetings**
 
 ---
 
-## 📋 Table of Contents
+## 🌐 Live Application URLs
 
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Screenshots](#screenshots)
-- [Getting Started](#getting-started)
-- [Installation](#installation)
-- [Environment Setup](#environment-setup)
-- [Running Locally](#running-locally)
-- [Deployment](#deployment)
-- [Architecture](#architecture)
-- [Security & Privacy](#security--privacy)
+> **Access the application now:**
 
----
-
-## 🎯 Overview
-
-**ENGAGE Analytics** is a real-time engagement tracking platform for virtual meetings that uses AI-powered computer vision to measure participant attention and engagement levels. Unlike traditional meeting tools that only track presence, ENGAGE provides actionable insights into:
-
-- **Face Presence Detection**: Detects if participants are physically present at their camera
-- **Attention Metrics**: Measures eye gaze focus and head pose engagement
-- **Engagement Scoring**: Classifies participants into 4 engagement levels (Fully Engaged, Partially Engaged, Passively Present, Away)
-- **Privacy-First Design**: All video processing happens locally—no video is uploaded or stored
-
-### Access the Application
-
-🔗 **Live Domain:** https://engageanalytic.me  
+🔗 **Primary Domain:** https://engageanalytic.me  
 🔗 **WWW Subdomain:** https://www.engageanalytic.me  
 🔗 **Vercel Backup:** https://engage-analytics.vercel.app  
 
 ---
 
-## ✨ Features
+## 📋 Project Info
 
-### For Session Hosts
-
-- ✅ **Schedule & Launch Sessions**: Plan meetings in advance or start instantly
-- ✅ **Live Engagement Dashboard**: Real-time visualization of participant engagement
-- ✅ **Participant Tracking**: See who's present and their attention levels
-- ✅ **Session Reports**: Detailed analytics post-session
-- ✅ **Consent Management**: Full control over data collection permissions
-- ✅ **Email Notifications**: Alerts when participants withdraw consent
-
-### For Participants
-
-- ✅ **Join via Link**: One-click join links (no login required initially)
-- ✅ **Transparency**: Clear consent dialogs before tracking starts
-- ✅ **Privacy Control**: Ability to withdraw consent at any time
-- ✅ **Local Processing**: Camera feed never leaves your device
-
-### For Administrators
-
-- ✅ **User Management**: Manage hosts, participants, and viewers
-- ✅ **Role Assignment**: Fine-grained role-based access control
-- ✅ **Analytics Dashboard**: Platform-wide metrics
-- ✅ **Audit Logs**: Complete trail of user actions
+**Project**: AI-Powered Engagement Analytics Platform  
+**Status**: ✅ Production Ready  
+**Version**: 1.0.0  
+**Last Updated**: January 18, 2026
 
 ---
 
-## 🛠 Technology Stack
+## 📚 Documentation
 
-### Frontend
+This README provides quick start information. For comprehensive documentation including full project structure, architecture diagrams, screenshots, and detailed setup instructions, please see:
 
-```
-React 18               - UI Framework
-TypeScript             - Type-safe JavaScript
-Vite                   - Build tool
-TailwindCSS            - Styling
-Shadcn/ui              - Component library
-React Router v6        - Client-side routing
-Lucide Icons           - Icon set
-```
+### 📖 Main Documentation Files
 
-### Backend & Services
-
-```
-Supabase               - PostgreSQL + Auth + Real-time
-Node.js (Edge Fn.)    - Serverless functions
-Resend                 - Email delivery
-```
-
-### Deployment
-
-```
-Vercel                 - Frontend hosting & Edge Network
-Supabase Cloud         - Database & Auth hosting
-```
+| Document | Contains |
+|----------|----------|
+| **[ENGAGE Analytics - Complete Guide](./docs/COMPLETE_README.md)** | 📋 Full project overview<br/>📁 Complete project structure (29+ directories)<br/>📸 Screenshots & images<br/>🏗️ Architecture diagrams<br/>🔒 Security & compliance details<br/>📚 Contributing guidelines |
+| **[Setup Reference Guide](./docs/SETUP_REFERENCE.md)** | ⚙️ Email configuration (Resend API)<br/>🔐 Google OAuth setup<br/>🌐 Custom domain configuration<br/>💻 Local development commands<br/>🗄️ Database migrations<br/>🔧 Environment variables<br/>🐛 Troubleshooting<br/>✅ Security checklist |
 
 ---
 
-## 📁 Project Structure
+## ⚡ Quick Start
 
+### For Users
+1. Visit: **https://engageanalytic.me**
+2. Click **"Sign Up"** to create an account
+3. Verify your email
+4. Login and start using the app!
+
+**Test Accounts** (pre-verified, no email needed):
 ```
-engage-analytics/
-├── README.md                          # Main documentation
-├── package.json                       # Project dependencies
-├── bun.lockb                          # Bun lockfile
-├── vite.config.ts                     # Vite configuration
-├── tsconfig.json                      # TypeScript config
-├── tsconfig.app.json                  # App TypeScript config
-├── tsconfig.node.json                 # Node TypeScript config
-├── tailwind.config.ts                 # TailwindCSS config
-├── eslint.config.js                   # ESLint configuration
-├── postcss.config.js                  # PostCSS config
-├── index.html                         # Entry point
-├── vercel.json                        # Vercel deployment config
-├── components.json                    # Shadcn/ui config
-│
-├── src/                               # Source code
-│   ├── main.tsx                       # App entry point
-│   ├── App.tsx                        # Main App component
-│   ├── App.css                        # Global app styles
-│   ├── index.css                      # Base/reset styles
-│   ├── vite-env.d.ts                  # Vite type definitions
-│   │
-│   ├── pages/                         # Page components
-│   │   ├── Index.tsx                  # Landing page
-│   │   ├── Auth.tsx                   # Login/signup page
-│   │   ├── Dashboard.tsx              # Main user dashboard
-│   │   ├── AdminDashboard.tsx         # Admin panel
-│   │   ├── Sessions.tsx               # Sessions list
-│   │   ├── SessionNew.tsx             # Create new session
-│   │   ├── SessionDetail.tsx          # Session details view
-│   │   ├── SessionHistory.tsx         # Session history
-│   │   ├── LiveSession.tsx            # Live tracking page
-│   │   ├── JoinSession.tsx            # Join session via link
-│   │   ├── Analytics.tsx              # Analytics dashboard
-│   │   ├── ParticipantDashboard.tsx   # Participant view
-│   │   ├── Profile.tsx                # User profile
-│   │   ├── ResetPassword.tsx          # Password reset
-│   │   ├── Support.tsx                # Support page
-│   │   └── NotFound.tsx               # 404 page
-│   │
-│   ├── components/                    # Reusable components
-│   │   ├── AppHeader.tsx              # Navigation header
-│   │   ├── Logo.tsx                   # Logo component
-│   │   ├── NavLink.tsx                # Navigation link
-│   │   ├── ProtectedRoute.tsx         # Route guard
-│   │   ├── RoleBasedRedirect.tsx      # Role-based routing
-│   │   ├── ImageLightbox.tsx          # Image lightbox
-│   │   ├── MFAVerification.tsx        # MFA verification
-│   │   ├── TwoFactorSetup.tsx         # 2FA setup wizard
-│   │   ├── PasswordStrengthIndicator.tsx # Password strength meter
-│   │   │
-│   │   ├── admin/                     # Admin components
-│   │   │   ├── UserRoleManagement.tsx # Manage user roles
-│   │   │   ├── SessionManagement.tsx  # Manage sessions
-│   │   │   └── AnalyticsOverview.tsx  # Platform analytics
-│   │   │
-│   │   ├── analytics/                 # Analytics components
-│   │   │   ├── ParticipantDistributionChart.tsx
-│   │   │   ├── EngagementTrendChart.tsx
-│   │   │   └── ExportReport.tsx
-│   │   │
-│   │   ├── live-tracking/             # Live session components
-│   │   │   ├── VideoFeed.tsx          # Video display
-│   │   │   ├── EngagementMetrics.tsx  # Metrics display
-│   │   │   ├── ParticipantTracker.tsx # Participant list
-│   │   │   ├── SessionStats.tsx       # Session stats
-│   │   │   ├── EngagementTimeline.tsx # Timeline chart
-│   │   │   └── ConsentDialog.tsx      # Consent management
-│   │   │
-│   │   └── ui/                        # UI primitives (Shadcn/ui)
-│   │       ├── button.tsx
-│   │       ├── card.tsx
-│   │       ├── dialog.tsx
-│   │       ├── input.tsx
-│   │       ├── select.tsx
-│   │       ├── alert.tsx
-│   │       └── ... (20+ component files)
-│   │
-│   ├── contexts/                      # React contexts
-│   │   └── AuthContext.tsx            # Authentication state
-│   │
-│   ├── hooks/                         # Custom React hooks
-│   │   ├── useFaceDetection.ts        # Face detection logic
-│   │   ├── use-mobile.tsx             # Mobile detection
-│   │   └── use-toast.ts               # Toast notifications
-│   │
-│   ├── lib/                           # Utility functions
-│   │   └── utils.ts                   # Helper utilities
-│   │
-│   ├── integrations/                  # External service integrations
-│   │   └── supabase/
-│   │       ├── client.ts              # Supabase client setup
-│   │       └── types.ts               # Database types
-│   │
-│   └── assets/                        # Static assets
-│       └── (images, fonts, etc.)
-│
-├── supabase/                          # Supabase backend
-│   ├── config.toml                    # Local development config
-│   │
-│   ├── migrations/                    # Database migrations (auto-applied)
-│   │   ├── 20251230173056_*.sql       # Initial schema
-│   │   ├── 20251231053724_*.sql       # User profiles
-│   │   ├── 20251231072615_*.sql       # Session management
-│   │   ├── 20251231092032_*.sql       # Engagement metrics
-│   │   ├── 20260117133000_*.sql       # RLS policies
-│   │   └── ... (10+ migration files)
-│   │
-│   └── functions/                     # Serverless Edge Functions
-│       ├── send-session-invite/       # Email invite function
-│       ├── send-session-reminders/    # Reminder emails
-│       ├── notify-session-scheduled/  # Schedule notifications
-│       ├── notify-session-ended/      # Session end alerts
-│       ├── notify-role-change/        # Role change emails
-│       └── notify-consent-withdrawal/ # Consent withdrawal alerts
-│
-├── public/                            # Static assets served directly
-│   └── robots.txt
-│
-└── .gitignore                         # Git ignore rules
+Email: testuser1@engagetest.com
+Password: TestPass123!
 ```
-
-### Key Directories Explained
-
-**`src/pages/`** - Full-page components representing different routes  
-**`src/components/`** - Reusable components organized by feature  
-**`src/hooks/`** - Custom React hooks (face detection, mobile detection)  
-**`supabase/migrations/`** - Database schema and RLS policies  
-**`supabase/functions/`** - Serverless functions for emails and notifications  
-
----
-
-## 📸 Screenshots
-
-### 1. Landing Page - AI-Powered Engagement Analytics
-![Landing Page - Hero Section](https://engageanalytic.me/landing-page.png)
-*Modern landing page with key features and call-to-action buttons*
-
-### 2. Session Dashboard - Live Engagement Tracking
-![Session Dashboard](https://engageanalytic.me/session-dashboard.png)
-*Real-time participant engagement metrics and live tracking interface*
-
-### 3. Join Session via Link
-![Join Session Interface](https://engageanalytic.me/join-session.png)
-*Seamless one-click session joining with consent management*
-
-### 4. Analytics Dashboard - Detailed Reports
-![Analytics Dashboard](https://engageanalytic.me/analytics-dashboard.png)
-*Comprehensive engagement analytics with charts and export options*
-
-### 5. Admin Panel - User Management
-![Admin Panel](https://engageanalytic.me/admin-dashboard.png)
-*Administrator interface for user and role management*
-
-> **Note:** To view actual screenshots, replace image URLs with your own. Add screenshot images to a `docs/images/` folder in your repository.
-
----
-
-## 🚀 Quick Start
-
-### For End Users
-
-1. **Visit the app:** https://engageanalytic.me
-2. **Sign up** or **log in** with your email
-3. **Create a session** or **join an existing one**
-4. **Enable camera** for engagement tracking
-5. **View real-time analytics** for your session
 
 ### For Developers
-
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/Chandan785/engageanalytics.git
-cd engageanalytics
+cd "Engage Analytics"
 
-# 2. Install dependencies
-bun install
-# or: npm install
+# Install dependencies
+npm install
 
-# 3. Setup environment variables
-cp .env.example .env.local
-# Edit .env.local with your Supabase and Resend credentials
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your Supabase and Resend API keys
 
-# 4. Start the development server
-bun run dev
+# Start development server
+npm run dev
 # App runs on http://localhost:5173
 ```
 
----
-
-## ⚙️ Installation
-
-### Prerequisites
-
-- **Node.js** 18+ ([Download](https://nodejs.org/))
-- **Bun** 1.0+ ([Download](https://bun.sh/)) or **npm** 9+
-- **Supabase** account ([Create Free](https://supabase.com))
-- **Resend** account for emails ([Create Free](https://resend.com))
-
-### Step 1: Clone Repository
-
-```bash
-git clone https://github.com/Chandan785/engageanalytics.git
-cd engageanalytics
-```
-
-### Step 2: Install Dependencies
-
-```bash
-# Using Bun (recommended)
-bun install
-
-# Or using npm
-npm install
-```
-
-### Step 3: Create Environment File
-
-```bash
-cp .env.example .env.local
-```
-
-### Step 4: Configure Environment Variables
-
-Edit `.env.local`:
-
-```env
-# Supabase Configuration
-VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-VITE_SUPABASE_PROJECT_ID=YOUR_PROJECT_ID
-VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_ANON_KEY
-
-# Email Service (Resend)
-RESEND_API_KEY=re_YOUR_API_KEY
-SENDER_EMAIL=noreply@yourdomain.com
-
-# Optional: Custom domain
-VITE_APP_URL=https://engageanalytic.me
-```
+**For detailed setup instructions, see [Setup Reference Guide](./docs/SETUP_REFERENCE.md)**
 
 ---
 
-## 🔧 Environment Setup
+## ✨ Key Features
 
-### Supabase Setup
-
-1. Go to [supabase.com](https://supabase.com)
-2. Create a new project
-3. Go to **Settings → API** and copy:
-   - `SUPABASE_URL` → `VITE_SUPABASE_URL`
-   - `Project ID` → `VITE_SUPABASE_PROJECT_ID`
-   - `anon public` key → `VITE_SUPABASE_PUBLISHABLE_KEY`
-4. Enable authentication:
-   - **Auth → Providers** → Enable "Email"
-   - **Auth → Providers** → Optional: Enable "Google"
-5. Run migrations:
-   ```bash
-   supabase db push
-   ```
-
-### Resend Setup
-
-1. Sign up at [resend.com](https://resend.com)
-2. Create API key and copy to `RESEND_API_KEY`
-3. Verify sender domain
-4. Update `SENDER_EMAIL` in `.env.local`
-
-### Database Initialization
-
-Supabase will automatically run migrations from `/supabase/migrations/` folder.
+✅ Real-time engagement analytics  
+✅ Face detection & recognition  
+✅ Gesture detection  
+✅ Engagement scoring  
+✅ User authentication  
+✅ Email notifications  
+✅ Profile management  
+✅ Admin dashboard  
 
 ---
 
-## 🏃 Running Locally
+## How can I edit this code?
 
-### Development Server
+There are several ways of editing your application.
 
-```bash
-bun run dev
+**Use your preferred IDE**
+
+Clone this repo and work locally using your preferred IDE. Push changes to your git repository.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
-Runs on: **http://localhost:5173**
 
-### Production Build
+**Edit a file directly in GitHub**
 
-```bash
-bun run build
-```
-Output: `dist/` folder
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-### Preview Production Build
+**Use GitHub Codespaces**
 
-```bash
-bun run preview
-```
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-### Lint Code
+## What technologies are used for this project?
 
-```bash
-bun run lint
-```
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
+
+## How can I deploy this project?
+
+Deploy this project using your preferred hosting service (Vercel, Netlify, AWS, etc.).
 
 ---
 
-## 🚀 Deployment
+## Email Configuration (Password Reset & Notifications)
 
-### Deploy Frontend to Vercel
+**Important:** Email functionality (password reset, notifications) requires SMTP configuration.
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+For comprehensive email setup instructions including Resend API configuration, Supabase SMTP settings, and troubleshooting, see:
+- **[Setup Reference Guide - Email Configuration Section](./docs/SETUP_REFERENCE.md#email-configuration-password-reset--notifications)**
 
-# Deploy
-vercel
-```
+**Quick Setup:**
+1. Get a Resend API key from [resend.com](https://resend.com)
+2. Configure SMTP in Supabase Project Settings > Auth > SMTP Settings
+3. Update `.env` with your `RESEND_API_KEY` and `SENDER_EMAIL`
 
-**Or** connect your GitHub repo to Vercel for automatic deployments.
+## Configuring Google Sign-In (Supabase)
 
-### Deploy to Supabase
+If you use Google OAuth for sign-in, make sure you complete these steps to avoid errors during sign-in:
 
-Functions are automatically deployed with:
+1. In Supabase dashboard, go to Authentication -> Providers and enable **Google**. Add the OAuth Client ID and Client Secret created in Google Cloud Console.
+2. Under the same Authentication settings, add your app redirect URL to **Redirect URLs**. For local development this is typically:
 
-```bash
-supabase functions deploy send-session-invite
-supabase functions deploy notify-session-scheduled
-```
+   `http://localhost:5173/dashboard`
 
-### Production Checklist
+   For production, add your deployed origin + `/dashboard` (e.g., `https://app.example.com/dashboard`).
+3. In Google Cloud Console, create OAuth credentials (OAuth Client ID) and add the same redirect URL(s) in the OAuth consent / credentials configuration.
+4. Ensure the following env vars are set in your `.env` or hosting environment:
 
-- [ ] Environment variables configured
-- [ ] Database migrations applied
-- [ ] Email service configured
-- [ ] Custom domain configured
-- [ ] HTTPS enabled
-- [ ] Error monitoring setup (Sentry recommended)
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
 
----
+For detailed step-by-step instructions, see:
+- **[Setup Reference Guide - Google Sign-In Section](./docs/SETUP_REFERENCE.md#configuring-google-sign-in-supabase)**
 
-## 🏗 Architecture
+## Custom Domain Setup
 
-### System Architecture
+Configure your custom domain (engageanalytic.me) through your hosting provider's DNS settings.
 
-```
-┌─────────────────────────────────────┐
-│   Frontend (React + TypeScript)     │
-│  ┌───────────────────────────────┐  │
-│  │  Face Detection Pipeline      │  │
-│  │  • Canvas pixel analysis      │  │
-│  │  • Engagement classification  │  │
-│  │  • Local video processing     │  │
-│  └───────────────────────────────┘  │
-└──────────┬────────────────────────────┘
-           │ WebSocket (Realtime)
-           ▼
-┌─────────────────────────────────────┐
-│   Supabase Backend                  │
-│  ┌───────────────────────────────┐  │
-│  │  PostgreSQL Database          │  │
-│  │  • 6 core tables              │  │
-│  │  • Row-Level Security (RLS)   │  │
-│  │  • Real-time subscriptions    │  │
-│  └───────────────────────────────┘  │
-│  ┌───────────────────────────────┐  │
-│  │  Edge Functions (Serverless)  │  │
-│  │  • Email notifications        │  │
-│  │  • Session webhooks           │  │
-│  └───────────────────────────────┘  │
-└─────────────────────────────────────┘
-```
-
-### Database Schema
-
-```
-┌─────────────────────┐
-│     profiles        │ User profiles
-├─────────────────────┤
-│ id (UUID)          │
-│ email              │
-│ full_name          │
-│ role (host|admin)  │
-│ created_at         │
-└─────────────────────┘
-
-┌─────────────────────┐
-│     sessions        │ Meeting sessions
-├─────────────────────┤
-│ id (UUID)          │
-│ host_id (FK)       │
-│ title              │
-│ status (scheduled  │
-│ start_time         │
-│ end_time           │
-│ join_link          │
-│ created_at         │
-└─────────────────────┘
-
-┌─────────────────────────┐
-│     participants        │ Session participants
-├─────────────────────────┤
-│ id (UUID)              │
-│ session_id (FK)        │
-│ user_id (FK)           │
-│ join_time              │
-│ consent_given          │
-│ created_at             │
-└─────────────────────────┘
-
-┌──────────────────────────┐
-│   engagement_metrics     │ Real-time metrics
-├──────────────────────────┤
-│ id (UUID)               │
-│ participant_id (FK)     │
-│ engagement_level        │
-│ timestamp               │
-│ face_detected           │
-│ confidence              │
-└──────────────────────────┘
-```
+For detailed Vercel and DNS configuration instructions, see:
+- **[Setup Reference Guide - Custom Domain Setup Section](./docs/SETUP_REFERENCE.md#custom-domain-setup)**
 
 ---
 
-## 🔒 Security & Privacy
+## 📖 Need More Information?
 
-### Privacy Measures
+### Quick Links to Detailed Guides
 
-✅ **Zero Video Upload** - All processing happens locally in the browser  
-✅ **No Face Detection Storage** - Engagement metrics only, no facial data stored  
-✅ **Encrypted Communication** - All data transmitted over HTTPS/WSS  
-✅ **End-to-End Protection** - TLS 1.3 for all connections  
-
-### Compliance
-
-✅ **GDPR Compliant** - Full data deletion, consent management  
-✅ **CCPA Ready** - Data export and deletion features  
-✅ **SOC 2 Type II** - Enterprise security standards  
-✅ **Privacy by Design** - User consent required before tracking  
-
-### Security Best Practices
-
-- 🔐 Supabase RLS policies on all tables
-- 🔐 JWT tokens with short expiration
-- 🔐 Database encryption at rest
-- 🔐 Rate limiting on all APIs
-- 🔐 CSRF protection enabled
+- 🚀 **Getting Started**: [Setup Reference Guide - Quick Start](./docs/SETUP_REFERENCE.md#quick-start)
+- ⚙️ **Environment Setup**: [Setup Reference Guide - Environment Setup](./docs/SETUP_REFERENCE.md#environment-variables-reference)
+- 📦 **Installation**: [Setup Reference Guide - Installation](./docs/SETUP_REFERENCE.md#step-1-clone-repository)
+- 💻 **Local Development**: [Setup Reference Guide - Running Locally](./docs/SETUP_REFERENCE.md#local-development-commands)
+- 🌐 **Deployment**: [Setup Reference Guide - Deployment](./docs/SETUP_REFERENCE.md#deploy-to-vercel)
+- 🗄️ **Database**: [Setup Reference Guide - Database Setup](./docs/SETUP_REFERENCE.md#database-setup)
+- 🐛 **Troubleshooting**: [Setup Reference Guide - Troubleshooting](./docs/SETUP_REFERENCE.md#troubleshooting)
+- 📋 **Full Project Structure**: [Complete README - Project Structure](./docs/COMPLETE_README.md#-project-structure)
+- 🏗️ **Architecture**: [Complete README - Architecture](./docs/COMPLETE_README.md#-architecture)
+- 🔒 **Security**: [Complete README - Security & Privacy](./docs/COMPLETE_README.md#-security--privacy)
 
 ---
 
-## 📞 Support & Contact
+## 📞 Support & Resources
 
 - **Website:** https://engageanalytic.me
 - **Email:** support@engageanalytic.me
-- **GitHub:** https://github.com/Chandan785/engageanalytics
-- **Report Issues:** [GitHub Issues](https://github.com/Chandan785/engageanalytics/issues)
+- **GitHub Issues:** https://github.com/Chandan785/engageanalytics/issues
+- **GitHub Repository:** https://github.com/Chandan785/engageanalytics
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file for details.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Write clean, type-safe code
-- Add tests for new features
-- Follow existing code style
-- Update documentation
-
----
-
-## 🎉 Acknowledgments
-
-Built with passion for better virtual engagement tracking using:
-
-- **Supabase** - Backend infrastructure
-- **Vercel** - Frontend deployment
-- **React** - UI framework
-- **TailwindCSS** - Styling
-- **Shadcn/ui** - Component library
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-**Live:** https://engageanalytic.me  
-**Repository:** https://github.com/Chandan785/engageanalytics  
-**Issues:** https://github.com/Chandan785/engageanalytics/issues
-
 Made with ❤️ for better engagement tracking
+
+[Visit Live Demo](https://engageanalytic.me) • [GitHub Repository](https://github.com/Chandan785/engageanalytics) • [Report Issues](https://github.com/Chandan785/engageanalytics/issues)
 
 </div>
