@@ -6,9 +6,10 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   requireHost?: boolean;
   requireAdmin?: boolean;
+  requireSuperAdmin?: boolean;
 }
 
-const ProtectedRoute = ({ children, requireHost = false, requireAdmin = false }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, requireHost = false, requireAdmin = false, requireSuperAdmin = false }: ProtectedRouteProps) => {
   const { user, loading, isHost, isAdmin, isSuperAdmin } = useAuth();
   const location = useLocation();
 
@@ -28,6 +29,10 @@ const ProtectedRoute = ({ children, requireHost = false, requireAdmin = false }:
   if (!user) {
     // Redirect to auth page but save the attempted location
     return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  if (requireSuperAdmin && !isSuperAdmin) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   if (requireAdmin && !isAdmin && !isSuperAdmin) {

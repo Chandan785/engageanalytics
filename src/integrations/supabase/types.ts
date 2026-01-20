@@ -127,10 +127,14 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          blocked_at: string | null
+          blocked_by: string | null
+          block_reason: string | null
           created_at: string
           email: string
           full_name: string | null
           id: string
+          is_blocked: boolean
           last_login_at: string | null
           organization: string | null
           updated_at: string
@@ -138,10 +142,14 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          blocked_at?: string | null
+          blocked_by?: string | null
+          block_reason?: string | null
           created_at?: string
           email: string
           full_name?: string | null
           id?: string
+          is_blocked?: boolean
           last_login_at?: string | null
           organization?: string | null
           updated_at?: string
@@ -149,10 +157,14 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          blocked_at?: string | null
+          blocked_by?: string | null
+          block_reason?: string | null
           created_at?: string
           email?: string
           full_name?: string | null
           id?: string
+          is_blocked?: boolean
           last_login_at?: string | null
           organization?: string | null
           updated_at?: string
@@ -313,6 +325,15 @@ export type Database = {
         Returns: boolean
       }
       can_join_session: { Args: { session_id: string }; Returns: boolean }
+      set_user_block_status: {
+        Args: {
+          p_super_admin_id: string
+          p_target_user_id: string
+          p_blocked: boolean
+          p_reason?: string | null
+        }
+        Returns: Json
+      }
       get_participant_profiles_for_host: {
         Args: { p_session_id: string }
         Returns: {
@@ -337,7 +358,7 @@ export type Database = {
       is_session_host: { Args: { session_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "host" | "participant" | "viewer" | "admin"
+      app_role: "host" | "participant" | "viewer" | "admin" | "super_admin"
       engagement_level:
         | "fully_engaged"
         | "partially_engaged"

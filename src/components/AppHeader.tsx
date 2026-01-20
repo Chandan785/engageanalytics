@@ -146,7 +146,9 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
                           <span
                             key={role}
                             className={`text-[10px] px-1.5 py-0.5 rounded font-medium capitalize ${
-                              role === 'admin'
+                              role === 'super_admin'
+                                ? 'bg-purple-600/10 text-purple-600'
+                                : role === 'admin'
                                 ? 'bg-destructive/10 text-destructive'
                                 : role === 'host'
                                 ? 'bg-primary/10 text-primary'
@@ -161,13 +163,22 @@ export const AppHeader = ({ backTo, backLabel, rightContent }: AppHeaderProps) =
                   </div>
                 </div>
                 <DropdownMenuSeparator />
-                {(isAdmin || isSuperAdmin) && (
+                {isSuperAdmin ? (
                   <DropdownMenuItem asChild>
-                    <Link to="/admin" className="cursor-pointer">
+                    <Link to="/super-admin" className="cursor-pointer">
                       <Shield className="mr-2 h-4 w-4" />
-                      Admin Dashboard
+                      Super Admin Dashboard
                     </Link>
                   </DropdownMenuItem>
+                ) : (
+                  isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="cursor-pointer">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )
                 )}
                 {isHost && (
                   <DropdownMenuItem asChild>

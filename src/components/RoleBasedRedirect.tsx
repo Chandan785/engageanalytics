@@ -23,8 +23,10 @@ const RoleBasedRedirect = () => {
       return;
     }
 
-    // Redirect based on role priority: super_admin/admin > host > participant
-    if (isAdmin || isSuperAdmin) {
+    // Redirect based on role priority: super_admin > admin > host > participant
+    if (isSuperAdmin) {
+      navigate('/super-admin', { replace: true });
+    } else if (isAdmin) {
       navigate('/admin', { replace: true });
     } else if (isHost) {
       navigate('/host-dashboard', { replace: true });

@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import ParticipantDashboard from "./pages/ParticipantDashboard";
 import Profile from "./pages/Profile";
 import Sessions from "./pages/Sessions";
@@ -56,6 +57,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/super-admin"
+              element={
+                <ProtectedRoute requireSuperAdmin>
+                  <SuperAdminDashboard />
                 </ProtectedRoute>
               }
             />

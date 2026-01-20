@@ -11,6 +11,10 @@ interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   organization: string | null;
+  is_blocked?: boolean | null;
+  blocked_at?: string | null;
+  blocked_by?: string | null;
+  block_reason?: string | null;
 }
 
 interface AuthContextType {

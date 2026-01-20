@@ -3,6 +3,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -34,6 +42,7 @@ export const SuperAdminTransfer = ({
   const [downgradeCurrent, setDowngradeCurrent] = useState(true);
   const [loading, setLoading] = useState(false);
   const [fetchingUsers, setFetchingUsers] = useState(true);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Only show if current user is SUPER_ADMIN
   if (currentUserRole !== 'super_admin') {
@@ -130,8 +139,11 @@ export const SuperAdminTransfer = ({
     }
   };
 
+  const selectedUser = users.find((u) => u.user_id === selectedNewAdmin);
+
   return (
-    <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-transparent dark:border-purple-900 dark:from-purple-950">
+    <>
+      <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-transparent dark:border-purple-900 dark:from-purple-950">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-purple-600" />
@@ -234,21 +246,14 @@ export const SuperAdminTransfer = ({
 
         {/* Transfer Button */}
         <Button
-          onClick={handleTransferOwnership}
+          onClick={() => setConfirmOpen(true)}
           disabled={!selectedNewAdmin || loading}
           className="w-full bg-purple-600 hover:bg-purple-700"
         >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              Transferring...
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4" />
-              Confirm Transfer
-            </span>
-          )}
+          <span className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4" />
+            Confirm Transfer
+          </span>
         </Button>
 
         {/* Info Box */}
@@ -258,7 +263,45 @@ export const SuperAdminTransfer = ({
           <p>• All your current sessions remain active</p>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm SUPER_ADMIN Transfer</DialogTitle>
+          <DialogDescription>
+            This action will transfer SUPER_ADMIN privileges to
+            {' '}
+            <span className="font-semibold text-foreground">
+              {selectedUser?.full_name || selectedUser?.email || 'the selected user'}
+            </span>
+            . You will be downgraded to ADMIN if the downgrade option is enabled.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={async () => {
+              setConfirmOpen(false);
+              await handleTransferOwnership();
+            }}
+            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Transferring...
+              </span>
+            ) : (
+              'Transfer Now'
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

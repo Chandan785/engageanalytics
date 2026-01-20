@@ -68,6 +68,8 @@ const RoleAuditLog = () => {
 
   const getRoleBadgeClass = (role: string) => {
     switch (role) {
+      case 'super_admin':
+        return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
       case 'admin':
         return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
       case 'host':
@@ -82,15 +84,68 @@ const RoleAuditLog = () => {
   };
 
   const getActionIcon = (action: string) => {
-    return action === 'add' ? (
-      <UserPlus className="h-4 w-4 text-green-500" />
-    ) : (
-      <UserMinus className="h-4 w-4 text-destructive" />
-    );
+    switch (action) {
+      case 'add':
+      case 'create_admin':
+        return <UserPlus className="h-4 w-4 text-green-500" />;
+      case 'remove':
+      case 'delete_admin':
+      case 'delete_user':
+        return <UserMinus className="h-4 w-4 text-destructive" />;
+      case 'transfer':
+        return <AlertTriangle className="h-4 w-4 text-purple-500" />;
+      case 'block':
+        return <AlertTriangle className="h-4 w-4 text-destructive" />;
+      case 'unblock':
+        return <AlertTriangle className="h-4 w-4 text-green-500" />;
+      case 'change':
+      default:
+        return <History className="h-4 w-4 text-muted-foreground" />;
+    }
   };
 
   const getActionText = (action: string) => {
-    return action === 'add' ? 'Added' : 'Removed';
+    switch (action) {
+      case 'add':
+        return 'Added';
+      case 'remove':
+        return 'Removed';
+      case 'change':
+        return 'Changed role to';
+      case 'transfer':
+        return 'Transferred SUPER_ADMIN';
+      case 'block':
+        return 'Blocked';
+      case 'unblock':
+        return 'Unblocked';
+      case 'create_admin':
+        return 'Created admin';
+      case 'delete_admin':
+        return 'Deleted admin';
+      case 'delete_user':
+        return 'Deleted user';
+      default:
+        return 'Updated';
+    }
+  };
+
+  const getActionPreposition = (action: string) => {
+    switch (action) {
+      case 'add':
+      case 'change':
+      case 'create_admin':
+        return 'to';
+      case 'remove':
+      case 'delete_admin':
+        return 'from';
+      case 'transfer':
+        return 'to';
+      case 'block':
+      case 'unblock':
+      case 'delete_user':
+      default:
+        return 'for';
+    }
   };
 
   const getDisplayName = (profile?: { full_name: string | null; email: string }) => {
@@ -137,7 +192,7 @@ const RoleAuditLog = () => {
                         {log.role}
                       </Badge>
                       <span className="text-muted-foreground text-sm">
-                        {log.action === 'add' ? 'to' : 'from'}
+                        {getActionPreposition(log.action)}
                       </span>
                       <span className="font-medium text-foreground">
                         {getDisplayName(log.target_profile)}

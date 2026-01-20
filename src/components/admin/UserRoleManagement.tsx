@@ -57,12 +57,15 @@ interface UserWithRoles {
   full_name: string | null;
   roles: string[];
   last_login_at: string | null;
+  is_blocked?: boolean | null;
+  blocked_at?: string | null;
+  block_reason?: string | null;
 }
 
 const AVAILABLE_ROLES = ['participant', 'viewer', 'host', 'admin', 'super_admin'] as const;
 
 const UserRoleManagement = () => {
-  const { profile, isSuperAdmin } = useAuth();
+  const { profile, user, isSuperAdmin } = useAuth();
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -115,11 +118,57 @@ const UserRoleManagement = () => {
     }
   };
 
+  const handleToggleBlock = async (targetUser: UserWithRoles) => {
+    if (!isSuperAdmin) {
+      toast.error('Only SUPER_ADMIN can block or unblock users');
+      return;
+    }
+
+    if (!user?.id) {
+      toast.error('Unable to verify current user');
+      return;
+    }
+
+    const nextBlockedState = !targetUser.is_blocked;
+    const confirmMessage = nextBlockedState
+      ? `Block ${targetUser.full_name || targetUser.email}? They will be unable to access the system.`
+      : `Unblock ${targetUser.full_name || targetUser.email}? They will regain access.`;
+
+    // eslint-disable-next-line no-alert
+    const confirmed = window.confirm(confirmMessage);
+    if (!confirmed) return;
+
+    setActionLoading(true);
+    try {
+      const { data, error } = await supabase.rpc('set_user_block_status', {
+        p_super_admin_id: user.id,
+        p_target_user_id: targetUser.user_id,
+        p_blocked: nextBlockedState,
+        p_reason: null,
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success(
+          nextBlockedState ? 'User blocked successfully' : 'User unblocked successfully'
+        );
+        fetchUsers();
+      } else {
+        throw new Error(data?.error || 'Failed to update block status');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update block status');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const fetchUsers = async () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, email, full_name, last_login_at')
+        .select('user_id, email, full_name, last_login_at, is_blocked, blocked_at, block_reason')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -533,7 +582,7 @@ const UserRoleManagement = () => {
   };
 
   const exportToCSV = () => {
-    const headers = ['Name', 'Email', 'User ID', 'Roles', 'Export Date'];
+    const headers = ['Name', 'Email', 'User ID', 'Roles', 'Blocked', 'Export Date'];
     const exportDate = new Date().toISOString();
     
     const rows = users.map((user) => [
@@ -541,6 +590,7 @@ const UserRoleManagement = () => {
       user.email,
       user.user_id,
       user.roles.join('; ') || 'No roles',
+      user.is_blocked ? 'Yes' : 'No',
       exportDate,
     ]);
 
@@ -749,6 +799,11 @@ const UserRoleManagement = () => {
                                 {user.full_name || 'No name'}
                               </p>
                               <p className="text-sm text-muted-foreground">{user.email}</p>
+                              {user.is_blocked && (
+                                <Badge variant="outline" className="mt-1 text-xs bg-destructive/10 text-destructive border-destructive/20">
+                                  Blocked
+                                </Badge>
+                              )}
                             </div>
                           </div>
                         </TableCell>
@@ -817,19 +872,31 @@ const UserRoleManagement = () => {
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          {getAvailableRolesForUser(user).length > 0 && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setIsDialogOpen(true);
-                              }}
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add Role
-                            </Button>
-                          )}
+                          <div className="flex items-center justify-end gap-2">
+                            {isSuperAdmin && (
+                              <Button
+                                variant={user.is_blocked ? 'outline' : 'destructive'}
+                                size="sm"
+                                onClick={() => handleToggleBlock(user)}
+                                disabled={actionLoading}
+                              >
+                                {user.is_blocked ? 'Unblock' : 'Block'}
+                              </Button>
+                            )}
+                            {getAvailableRolesForUser(user).length > 0 && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsDialogOpen(true);
+                                }}
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Add Role
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
