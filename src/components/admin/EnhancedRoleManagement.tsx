@@ -113,6 +113,17 @@ export const EnhancedRoleManagement = ({
     const targetHierarchy = ROLE_HIERARCHY[role];
     const targetCurrentHierarchy = ROLE_HIERARCHY[targetUser.current_role];
 
+    if (
+      (targetUser.current_role === 'admin' || targetUser.current_role === 'super_admin') &&
+      role !== targetUser.current_role
+    ) {
+      return {
+        valid: false,
+        message: 'Admin and SUPER_ADMIN roles cannot be downgraded or removed',
+        type: 'error',
+      };
+    }
+
     // Rule 1: Only SUPER_ADMIN can assign SUPER_ADMIN
     if (role === 'super_admin' && currentUserRole !== 'super_admin') {
       return {

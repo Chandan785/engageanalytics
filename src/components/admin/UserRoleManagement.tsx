@@ -204,6 +204,11 @@ const UserRoleManagement = () => {
 
   const handleAddRole = async () => {
     if (!selectedUser || !roleToAdd) return;
+
+    if (selectedUser.roles.includes('admin') || selectedUser.roles.includes('super_admin')) {
+      toast.error('Admin and SUPER_ADMIN roles cannot be downgraded');
+      return;
+    }
     
     // ADMIN cannot add ADMIN or SUPER_ADMIN roles
     if (!isSuperAdmin && (roleToAdd === 'admin' || roleToAdd === 'super_admin')) {
@@ -249,9 +254,9 @@ const UserRoleManagement = () => {
   };
 
   const confirmRemoveRole = (userId: string, role: string, userName: string) => {
-    // Prevent removing SUPER_ADMIN role
-    if (role === 'super_admin' && !isSuperAdmin) {
-      toast.error('Only SUPER_ADMIN can remove SUPER_ADMIN role');
+    // Prevent removing ADMIN or SUPER_ADMIN roles
+    if (role === 'admin' || role === 'super_admin') {
+      toast.error('Admin and SUPER_ADMIN roles cannot be removed');
       return;
     }
     
@@ -264,9 +269,9 @@ const UserRoleManagement = () => {
   };
 
   const handleRemoveRole = async (userId: string, role: string) => {
-    // Prevent removing SUPER_ADMIN role
-    if (role === 'super_admin' && !isSuperAdmin) {
-      toast.error('Only SUPER_ADMIN can remove SUPER_ADMIN role');
+    // Prevent removing ADMIN or SUPER_ADMIN roles
+    if (role === 'admin' || role === 'super_admin') {
+      toast.error('Admin and SUPER_ADMIN roles cannot be removed');
       return;
     }
 
@@ -335,6 +340,12 @@ const UserRoleManagement = () => {
   const handleBulkAddRole = async () => {
     if (!bulkRole || selectedUserIds.size === 0) return;
 
+    const selectedUsers = users.filter((u) => selectedUserIds.has(u.user_id));
+    if (selectedUsers.some((u) => u.roles.includes('admin') || u.roles.includes('super_admin'))) {
+      toast.error('Admin and SUPER_ADMIN roles cannot be downgraded');
+      return;
+    }
+
     // Prevent non-super-admin from assigning admin/super_admin roles
     if (!isSuperAdmin && (bulkRole === 'admin' || bulkRole === 'super_admin')) {
       toast.error('Only SUPER_ADMIN can assign ADMIN or SUPER_ADMIN roles');
@@ -396,18 +407,10 @@ const UserRoleManagement = () => {
   const handleBulkRemoveRole = async () => {
     if (!bulkRemoveRole || selectedUserIds.size === 0) return;
 
-    // Prevent removing SUPER_ADMIN role unless user is SUPER_ADMIN
-    if (bulkRemoveRole === 'super_admin' && !isSuperAdmin) {
-      toast.error('Only SUPER_ADMIN can remove SUPER_ADMIN role');
-      return;
-    }
-
-    // Show confirmation for admin/super_admin role
+    // Prevent removing ADMIN or SUPER_ADMIN roles
     if (bulkRemoveRole === 'admin' || bulkRemoveRole === 'super_admin') {
-      const confirmRemove = window.confirm(
-        `Are you sure you want to remove ${bulkRemoveRole} privileges from ${selectedUserIds.size} user(s)? This will revoke their access.`
-      );
-      if (!confirmRemove) return;
+      toast.error('Admin and SUPER_ADMIN roles cannot be removed');
+      return;
     }
 
     setActionLoading(true);
@@ -485,10 +488,8 @@ const UserRoleManagement = () => {
     
     let rolesArray = Array.from(allRoles);
     
-    // ADMIN cannot remove ADMIN or SUPER_ADMIN roles
-    if (!isSuperAdmin) {
-      rolesArray = rolesArray.filter((role) => role !== 'admin' && role !== 'super_admin');
-    }
+    // ADMIN and SUPER_ADMIN roles are never removable
+    rolesArray = rolesArray.filter((role) => role !== 'admin' && role !== 'super_admin');
     
     return rolesArray;
   };
@@ -571,6 +572,9 @@ const UserRoleManagement = () => {
   };
 
   const getAvailableRolesForUser = (user: UserWithRoles) => {
+    if (user.roles.includes('admin') || user.roles.includes('super_admin')) {
+      return [];
+    }
     let availableRoles = AVAILABLE_ROLES.filter((role) => !user.roles.includes(role));
     
     // ADMIN cannot see/assign ADMIN or SUPER_ADMIN roles

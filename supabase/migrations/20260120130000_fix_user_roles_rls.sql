@@ -25,7 +25,7 @@ CREATE POLICY "Admins can insert roles"
     public.has_role(auth.uid(), 'super_admin')
     OR (
       public.has_role(auth.uid(), 'admin')
-      AND role <> 'super_admin'::app_role
+      AND role NOT IN ('admin'::app_role, 'super_admin'::app_role)
     )
   );
 
@@ -39,11 +39,11 @@ CREATE POLICY "Admins can update roles"
       public.has_role(auth.uid(), 'super_admin')
       OR (
         public.has_role(auth.uid(), 'admin')
-        AND role <> 'super_admin'::app_role
+        AND role NOT IN ('admin'::app_role, 'super_admin'::app_role)
       )
     )
     AND (
-      role <> 'super_admin'::app_role
+      role NOT IN ('admin'::app_role, 'super_admin'::app_role)
       OR (
         role = 'super_admin'::app_role
         AND (
@@ -73,11 +73,11 @@ CREATE POLICY "Admins can delete roles"
       public.has_role(auth.uid(), 'super_admin')
       OR (
         public.has_role(auth.uid(), 'admin')
-        AND role <> 'super_admin'::app_role
+        AND role NOT IN ('admin'::app_role, 'super_admin'::app_role)
       )
     )
     AND (
-      role <> 'super_admin'::app_role
+      role NOT IN ('admin'::app_role, 'super_admin'::app_role)
       OR (
         role = 'super_admin'::app_role
         AND (
