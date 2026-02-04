@@ -185,6 +185,29 @@ const UserRoleManagement = () => {
         return;
       }
 
+      const { data: profilesWithRoles, error: profilesJoinError } = await supabase
+        .from('profiles')
+        .select('user_id, email, full_name, last_login_at, is_blocked, blocked_at, block_reason, user_roles(role)')
+        .order('created_at', { ascending: false });
+
+      if (!profilesJoinError && profilesWithRoles && profilesWithRoles.length > 0) {
+        const usersWithRoles: UserWithRoles[] = profilesWithRoles.map((profile: any) => ({
+          user_id: profile.user_id,
+          email: profile.email,
+          full_name: profile.full_name,
+          last_login_at: profile.last_login_at,
+          is_blocked: profile.is_blocked,
+          blocked_at: profile.blocked_at,
+          block_reason: profile.block_reason,
+          roles: Array.isArray(profile.user_roles)
+            ? profile.user_roles.map((r: any) => r.role)
+            : [],
+        }));
+
+        setUsers(usersWithRoles);
+        return;
+      }
+
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, email, full_name, last_login_at, is_blocked, blocked_at, block_reason')
@@ -212,9 +235,9 @@ const UserRoleManagement = () => {
       }));
 
       setUsers(usersWithRoles);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching users:', error);
-      toast.error('Failed to load users');
+      toast.error(error?.message || 'Failed to load users');
     } finally {
       setLoading(false);
     }
