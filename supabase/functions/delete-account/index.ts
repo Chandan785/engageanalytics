@@ -12,29 +12,37 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization") || "";
-    const token = authHeader.replace("Bearer ", "").trim();
+    const authHeader =
+      req.headers.get("authorization") ||
+      req.headers.get("Authorization") ||
+      req.headers.get("x-supabase-auth") ||
+      "";
 
-    if (!token) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization token" }),
-        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
+    const token = authHeader.replace("Bearer ", "").trim();
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
+      global: authHeader ? { headers: { Authorization: authHeader } } : undefined,
+    });
 
-    const {
-      data: { user },
-      error: userError,
-    } = await adminClient.auth.getUser(token);
+    let user = null;
+    let userError = null;
+
+    if (token) {
+      const result = await adminClient.auth.getUser(token);
+      user = result.data.user;
+      userError = result.error;
+    } else {
+      const result = await adminClient.auth.getUser();
+      user = result.data.user;
+      userError = result.error;
+    }
 
     if (userError || !user) {
       return new Response(
-        JSON.stringify({ error: "Invalid user session" }),
+        JSON.stringify({ error: userError?.message || "Invalid user session" }),
         { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
