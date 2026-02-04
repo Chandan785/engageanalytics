@@ -82,8 +82,16 @@ CREATE TRIGGER on_role_removed
   AFTER DELETE ON public.user_roles
   FOR EACH ROW EXECUTE FUNCTION public.log_role_change();
 
--- Grant necessary permissions
-GRANT USAGE ON SCHEMA net TO postgres, anon, authenticated, service_role;
-GRANT ALL ON ALL TABLES IN SCHEMA net TO postgres, anon, authenticated, service_role;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA net TO postgres, anon, authenticated, service_role;
-GRANT ALL ON ALL FUNCTIONS IN SCHEMA net TO postgres, anon, authenticated, service_role;
+-- Grant necessary permissions (only if pg_net schema exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'net') THEN
+    EXECUTE 'GRANT USAGE ON SCHEMA net TO postgres, anon, authenticated, service_role';
+    EXECUTE 'GRANT ALL ON ALL TABLES IN SCHEMA net TO postgres, anon, authenticated, service_role';
+    EXECUTE 'GRANT ALL ON ALL SEQUENCES IN SCHEMA net TO postgres, anon, authenticated, service_role';
+    EXECUTE 'GRANT ALL ON ALL FUNCTIONS IN SCHEMA net TO postgres, anon, authenticated, service_role';
+  ELSE
+    RAISE NOTICE 'Skipping pg_net grants because schema "net" does not exist.';
+  END IF;
+END
+$$;

@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ArrowRight, Crown } from 'lucide-react';
 
 interface User {
   user_id: string;
@@ -31,6 +31,14 @@ interface SuperAdminTransferProps {
   currentUserId: string;
   currentUserRole: string;
 }
+
+const ROLE_PRIORITY: Record<string, number> = {
+  super_admin: 4,
+  admin: 3,
+  host: 2,
+  viewer: 1,
+  participant: 0,
+};
 
 export const SuperAdminTransfer = ({
   currentUserId,
@@ -56,33 +64,63 @@ export const SuperAdminTransfer = ({
   const fetchAdminUsers = async () => {
     try {
       setFetchingUsers(true);
-      const { data, error } = await supabase
+      const { data: directoryData, error: directoryError } = await supabase
+        .rpc('get_user_directory');
+
+      if (!directoryError && directoryData && directoryData.length > 0) {
+        const formattedUsers = (directoryData || [])
+          .map((row: any) => {
+            const rolesArray = Array.isArray(row.roles) ? row.roles : [];
+            const role = rolesArray.sort(
+              (a: string, b: string) => (ROLE_PRIORITY[b] ?? 0) - (ROLE_PRIORITY[a] ?? 0)
+            )[0] || 'participant';
+
+            return {
+              user_id: row.user_id,
+              email: row.email || 'Unknown',
+              full_name: row.full_name || 'Unknown',
+              role,
+            } as User;
+          })
+          .filter((u) => u.user_id !== currentUserId);
+
+        setUsers(formattedUsers);
+        return;
+      }
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, email, full_name')
+        .order('created_at', { ascending: false });
+
+      if (profilesError) throw profilesError;
+
+      const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
-        .select(
-          `
-          user_id,
-          role,
-          profiles:user_id (
-            email,
-            full_name
-          )
-        `
-        )
-        .in('role', ['admin', 'super_admin'])
-        .order('user_id');
+        .select('user_id, role');
 
-      if (error) throw error;
+      if (rolesError) throw rolesError;
 
-      const formattedUsers = data
-        ?.map((item: any) => ({
-          user_id: item.user_id,
-          email: item.profiles?.email || 'Unknown',
-          full_name: item.profiles?.full_name || 'Unknown',
-          role: item.role,
-        }))
-        .filter((u: User) => u.user_id !== currentUserId);
+      const formattedUsers = (profiles || [])
+        .map((profile) => {
+          const userRoles = (roles || [])
+            .filter((roleItem) => roleItem.user_id === profile.user_id)
+            .map((roleItem) => roleItem.role);
 
-      setUsers(formattedUsers || []);
+          const role = userRoles.sort(
+            (a, b) => (ROLE_PRIORITY[b] ?? 0) - (ROLE_PRIORITY[a] ?? 0)
+          )[0] || 'participant';
+
+          return {
+            user_id: profile.user_id,
+            email: profile.email || 'Unknown',
+            full_name: profile.full_name || 'Unknown',
+            role,
+          } as User;
+        })
+        .filter((u) => u.user_id !== currentUserId);
+
+      setUsers(formattedUsers);
     } catch (error) {
       console.error('Error fetching admin users:', error);
       toast({

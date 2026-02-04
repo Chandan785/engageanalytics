@@ -181,6 +181,52 @@ export const ChatbotWidget = () => {
           "Admins can manage users, assign roles, view platform analytics, and review audit logs from the Admin Dashboard.",
       },
       {
+        id: "super_admin_overview",
+        keywords: [
+          "super admin",
+          "superadmin",
+          "super-admin",
+          "super admin dashboard",
+          "super admin features",
+        ],
+        response:
+          "Super Admins have full system control: advanced role management, SUPER_ADMIN transfer, audit logs, and system settings. Open the Super Admin Dashboard from your profile menu.",
+      },
+      {
+        id: "super_admin_roles",
+        keywords: [
+          "super admin roles",
+          "advanced role management",
+          "role management",
+          "super admin role",
+        ],
+        response:
+          "Go to Super Admin Dashboard → Role Management (Advanced) to change roles with SUPER_ADMIN rules enforced.",
+      },
+      {
+        id: "super_admin_transfer",
+        keywords: [
+          "transfer super admin",
+          "super admin transfer",
+          "change super admin",
+          "super admin ownership",
+        ],
+        response:
+          "Open Super Admin Dashboard → Transfer Super Admin. Select a user, choose whether to downgrade yourself, then confirm the transfer.",
+      },
+      {
+        id: "super_admin_audit",
+        keywords: ["audit log", "role audit", "system activity", "audit logs"],
+        response:
+          "Super Admin Dashboard → Audit Logs shows role changes and system activity history.",
+      },
+      {
+        id: "super_admin_settings",
+        keywords: ["system settings", "global settings", "feature flags", "policies"],
+        response:
+          "Super Admin Dashboard → System Settings contains global controls like policies and integrations.",
+      },
+      {
         id: "support",
         keywords: ["support", "help", "contact"],
         response:

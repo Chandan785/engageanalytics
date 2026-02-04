@@ -63,32 +63,63 @@ export const EnhancedRoleManagement = ({
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data: directoryData, error: directoryError } = await supabase
+        .rpc('get_user_directory');
+
+      if (!directoryError && directoryData && directoryData.length > 0) {
+        const formattedUsers = (directoryData || [])
+          .map((row: any) => {
+            const rolesArray = Array.isArray(row.roles) ? row.roles : [];
+            const current_role = rolesArray.sort(
+              (a: string, b: string) => (ROLE_HIERARCHY[b] ?? 0) - (ROLE_HIERARCHY[a] ?? 0)
+            )[0] || 'participant';
+
+            return {
+              user_id: row.user_id,
+              email: row.email || 'Unknown',
+              full_name: row.full_name || 'Unknown',
+              current_role,
+            } as User;
+          })
+          .filter((u) => u.user_id !== currentUserId);
+
+        setUsers(formattedUsers);
+        return;
+      }
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, email, full_name')
+        .order('created_at', { ascending: false });
+
+      if (profilesError) throw profilesError;
+
+      const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
-        .select(
-          `
-          user_id,
-          role,
-          profiles:user_id (
-            email,
-            full_name
-          )
-        `
-        )
-        .order('user_id');
+        .select('user_id, role');
 
-      if (error) throw error;
+      if (rolesError) throw rolesError;
 
-      const formattedUsers = data
-        ?.map((item: any) => ({
-          user_id: item.user_id,
-          email: item.profiles?.email || 'Unknown',
-          full_name: item.profiles?.full_name || 'Unknown',
-          current_role: item.role,
-        }))
-        .filter((u: User) => u.user_id !== currentUserId);
+      const formattedUsers = (profiles || [])
+        .map((profile) => {
+          const userRoles = (roles || [])
+            .filter((roleItem) => roleItem.user_id === profile.user_id)
+            .map((roleItem) => roleItem.role);
 
-      setUsers(formattedUsers || []);
+          const current_role = userRoles.sort(
+            (a, b) => (ROLE_HIERARCHY[b] ?? 0) - (ROLE_HIERARCHY[a] ?? 0)
+          )[0] || 'participant';
+
+          return {
+            user_id: profile.user_id,
+            email: profile.email || 'Unknown',
+            full_name: profile.full_name || 'Unknown',
+            current_role,
+          } as User;
+        })
+        .filter((u) => u.user_id !== currentUserId);
+
+      setUsers(formattedUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({

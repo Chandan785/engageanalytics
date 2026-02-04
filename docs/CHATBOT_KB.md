@@ -29,6 +29,13 @@ Purpose: Help users understand and use all features and workflows of the Engage 
 - View platform-wide analytics
 - Access audit logs
 
+### Super Admin (Advanced)
+- Full control of system roles and permissions
+- Advanced role management with SUPER_ADMIN rules enforced
+- Transfer SUPER_ADMIN ownership to another user
+- View role audit logs and system activity
+- Access global system settings (feature flags, policies, integrations)
+
 ## Top Tasks (User How-To)
 
 ### 1) Create an account
@@ -145,6 +152,26 @@ Admins use the Admin Dashboard to assign roles and review platform analytics.
 - Assign roles
 - Manage users
 - Admin user controls
+
+### Intent: SuperAdminOverview
+- What can super admin do?
+- Super admin features
+- Super admin dashboard
+
+### Intent: SuperAdminTransfer
+- Transfer super admin
+- Change super admin owner
+- Give super admin to another user
+
+### Intent: SuperAdminAudit
+- Super admin audit log
+- Role audit logs
+- System activity logs
+
+### Intent: SuperAdminSettings
+- Super admin settings
+- System settings
+- Global settings
 
 ### Intent: RolePermissions
 - What can admins do?

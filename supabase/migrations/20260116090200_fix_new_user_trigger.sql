@@ -46,5 +46,11 @@ CREATE TRIGGER on_auth_user_created
 -- Grant necessary permissions
 GRANT EXECUTE ON FUNCTION public.handle_new_user() TO postgres, service_role;
 
--- Ensure the trigger is enabled
-ALTER TABLE auth.users ENABLE TRIGGER on_auth_user_created;
+-- Ensure the trigger is enabled (non-blocking if permission is denied)
+DO $$
+BEGIN
+  ALTER TABLE auth.users ENABLE TRIGGER on_auth_user_created;
+EXCEPTION WHEN insufficient_privilege THEN
+  RAISE NOTICE 'Skipping auth.users trigger enable (insufficient privileges).';
+END
+$$;
