@@ -63,30 +63,6 @@ export const EnhancedRoleManagement = ({
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data: directoryData, error: directoryError } = await supabase
-        .rpc('get_user_directory');
-
-      if (!directoryError && directoryData && directoryData.length > 0) {
-        const formattedUsers = (directoryData || [])
-          .map((row: any) => {
-            const rolesArray = Array.isArray(row.roles) ? row.roles : [];
-            const current_role = rolesArray.sort(
-              (a: string, b: string) => (ROLE_HIERARCHY[b] ?? 0) - (ROLE_HIERARCHY[a] ?? 0)
-            )[0] || 'participant';
-
-            return {
-              user_id: row.user_id,
-              email: row.email || 'Unknown',
-              full_name: row.full_name || 'Unknown',
-              current_role,
-            } as User;
-          })
-          .filter((u) => u.user_id !== currentUserId);
-
-        setUsers(formattedUsers);
-        return;
-      }
-
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, email, full_name')

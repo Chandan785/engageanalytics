@@ -166,48 +166,6 @@ const UserRoleManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data: directoryData, error: directoryError } = await supabase
-        .rpc('get_user_directory');
-
-      if (!directoryError && directoryData && directoryData.length > 0) {
-        const usersWithRoles: UserWithRoles[] = directoryData.map((row: any) => ({
-          user_id: row.user_id,
-          email: row.email,
-          full_name: row.full_name,
-          last_login_at: row.last_login_at,
-          is_blocked: row.is_blocked,
-          blocked_at: row.blocked_at,
-          block_reason: row.block_reason,
-          roles: Array.isArray(row.roles) ? row.roles : [],
-        }));
-
-        setUsers(usersWithRoles);
-        return;
-      }
-
-      const { data: profilesWithRoles, error: profilesJoinError } = await supabase
-        .from('profiles')
-        .select('user_id, email, full_name, last_login_at, is_blocked, blocked_at, block_reason, user_roles(role)')
-        .order('created_at', { ascending: false });
-
-      if (!profilesJoinError && profilesWithRoles && profilesWithRoles.length > 0) {
-        const usersWithRoles: UserWithRoles[] = profilesWithRoles.map((profile: any) => ({
-          user_id: profile.user_id,
-          email: profile.email,
-          full_name: profile.full_name,
-          last_login_at: profile.last_login_at,
-          is_blocked: profile.is_blocked,
-          blocked_at: profile.blocked_at,
-          block_reason: profile.block_reason,
-          roles: Array.isArray(profile.user_roles)
-            ? profile.user_roles.map((r: any) => r.role)
-            : [],
-        }));
-
-        setUsers(usersWithRoles);
-        return;
-      }
-
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, email, full_name, last_login_at, is_blocked, blocked_at, block_reason')
