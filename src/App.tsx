@@ -24,6 +24,7 @@ import Analytics from "./pages/Analytics";
 import SessionHistory from "./pages/SessionHistory";
 import NotFound from "./pages/NotFound";
 import Support from "./pages/Support";
+import { ChatbotWidget } from "@/components/ChatbotWidget";
 
 const queryClient = new QueryClient();
 
@@ -144,6 +145,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <ChatbotWidget />
         </AuthProvider>
       </BrowserRouter>
       </TooltipProvider>
