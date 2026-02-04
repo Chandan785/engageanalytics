@@ -200,7 +200,20 @@ const Profile = () => {
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
     try {
-      const { error } = await supabase.functions.invoke('delete-account');
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError || !session?.access_token) {
+        throw new Error('Missing session token');
+      }
+
+      const { error } = await supabase.functions.invoke('delete-account', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
 
       if (error) {
         throw error;
