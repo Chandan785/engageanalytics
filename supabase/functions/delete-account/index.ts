@@ -23,17 +23,14 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
     const {
       data: { user },
       error: userError,
-    } = await supabaseClient.auth.getUser();
+    } = await adminClient.auth.getUser(token);
 
     if (userError || !user) {
       return new Response(
@@ -41,8 +38,6 @@ const handler = async (req: Request): Promise<Response> => {
         { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
-
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
     await adminClient.from("user_roles").delete().eq("user_id", user.id);
     await adminClient.from("profiles").delete().eq("user_id", user.id);
