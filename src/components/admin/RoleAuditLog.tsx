@@ -46,8 +46,16 @@ const RoleAuditLog = () => {
       const logsWithProfiles = await Promise.all(
         (data || []).map(async (log) => {
           const [adminProfile, targetProfile] = await Promise.all([
-            supabase.from('profiles').select('full_name, email').eq('user_id', log.user_id).single(),
-            supabase.from('profiles').select('full_name, email').eq('user_id', log.target_user_id).single(),
+            supabase
+              .from('profiles')
+              .select('full_name, email')
+              .eq('user_id', log.user_id)
+              .maybeSingle(),
+            supabase
+              .from('profiles')
+              .select('full_name, email')
+              .eq('user_id', log.target_user_id)
+              .maybeSingle(),
           ]);
 
           return {
