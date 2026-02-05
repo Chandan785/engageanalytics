@@ -212,6 +212,12 @@ const Profile = () => {
       const { error } = await supabase.functions.invoke('delete-account', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
+          apikey:
+            import.meta.env.VITE_SUPABASE_ANON_KEY ||
+            import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: {
+          access_token: session.access_token,
         },
       });
 
@@ -219,7 +225,7 @@ const Profile = () => {
         throw error;
       }
 
-      await signOut();
+      await signOut('local');
       navigate('/');
     } catch (error: any) {
       toast({

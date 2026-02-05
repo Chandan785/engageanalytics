@@ -262,13 +262,9 @@ const UserRoleManagement = () => {
       toast.error('Admin and SUPER_ADMIN roles cannot be removed');
       return;
     }
-    
-    if (role === 'admin' || role === 'super_admin') {
-      setRoleToRemove({ userId, role, userName });
-      setIsRemoveDialogOpen(true);
-    } else {
-      handleRemoveRole(userId, role);
-    }
+
+    setRoleToRemove({ userId, role, userName });
+    setIsRemoveDialogOpen(true);
   };
 
   const handleRemoveRole = async (userId: string, role: string) => {
@@ -278,20 +274,28 @@ const UserRoleManagement = () => {
       return;
     }
 
+    const targetUser = users.find((u) => u.user_id === userId);
+    const targetRoles = targetUser?.roles || [];
+    const hasPrivilegedRole = targetRoles.includes('admin') || targetRoles.includes('super_admin');
+    const remainingRoles = targetRoles.filter((r) => r !== role);
+
+    if (hasPrivilegedRole && !isSuperAdmin) {
+      toast.error('Only SUPER_ADMIN can modify ADMIN or SUPER_ADMIN users');
+      return;
+    }
+
     setActionLoading(true);
     try {
-      // Determine downgrade role based on current role
-      let newRole = 'participant'; // Default downgrade
-      
-      if (role === 'admin') {
-        newRole = 'participant';
-      } else if (role === 'super_admin') {
-        newRole = 'admin'; // Downgrade super_admin to admin
-      } else if (role === 'host') {
-        newRole = 'participant';
+      let newRole: string = 'participant';
+
+      if (targetRoles.includes('super_admin')) {
+        newRole = 'super_admin';
+      } else if (targetRoles.includes('admin')) {
+        newRole = 'admin';
+      } else if (remainingRoles.length > 0) {
+        newRole = remainingRoles[0];
       }
 
-      // Use change_user_role function to safely change role
       const { data, error } = await supabase.rpc('change_user_role', {
         p_admin_user_id: profile?.id,
         p_target_user_id: userId,
@@ -301,7 +305,10 @@ const UserRoleManagement = () => {
       if (error) throw error;
 
       if (data?.success) {
-        toast.success(`Removed ${role} role - user now has ${newRole} role`);
+        const message = remainingRoles.length === 0
+          ? `Removed ${role} role - user now has ${newRole} role`
+          : `Removed ${role} role - user now has ${newRole} role`;
+        toast.success(message);
         sendRoleChangeNotification(userId, 'remove', role);
         fetchUsers();
       } else {

@@ -23,22 +23,37 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+    let accessToken = token;
+
+    if (!accessToken) {
+      try {
+        const body = await req.json();
+        accessToken = body?.access_token || body?.token || "";
+      } catch {
+        accessToken = "";
+      }
+    }
+
+    if (!accessToken) {
+      return new Response(
+        JSON.stringify({ error: "Missing access token" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!supabaseServiceKey) {
+      return new Response(
+        JSON.stringify({ error: "Missing service role key" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
-      global: authHeader ? { headers: { Authorization: authHeader } } : undefined,
+      auth: { persistSession: false },
     });
 
-    let user = null;
-    let userError = null;
-
-    if (token) {
-      const result = await adminClient.auth.getUser(token);
-      user = result.data.user;
-      userError = result.error;
-    } else {
-      const result = await adminClient.auth.getUser();
-      user = result.data.user;
-      userError = result.error;
-    }
+    const { data: userData, error: userError } = await adminClient.auth.getUser(accessToken);
+    const user = userData?.user || null;
 
     if (userError || !user) {
       return new Response(

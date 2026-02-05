@@ -25,7 +25,7 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signOut: () => Promise<void>;
+  signOut: (scope?: 'local' | 'global') => Promise<void>;
   hasRole: (role: UserRole) => boolean;
   isHost: boolean;
   isAdmin: boolean;
@@ -101,6 +101,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .from('profiles')
       .update({ last_login_at: new Date().toISOString() })
       .eq('user_id', userId);
+  };
+
+  const clearSupabaseLocalSession = () => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) return;
+
+    try {
+      const projectRef = new URL(supabaseUrl).hostname.split('.')[0];
+      const storageKey = `sb-${projectRef}-auth-token`;
+      localStorage.removeItem(storageKey);
+      sessionStorage.removeItem(storageKey);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.warn('[supabase] Failed to clear local session:', error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -210,8 +226,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const signOut = async (scope: 'local' | 'global' = 'global') => {
+    if (scope === 'local') {
+      clearSupabaseLocalSession();
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setRoles([]);
+      return;
+    }
+
+    try {
+      await supabase.auth.signOut({ scope });
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.warn('[supabase] signOut error ignored:', error);
+      }
+    }
     setUser(null);
     setSession(null);
     setProfile(null);
